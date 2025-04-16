@@ -1821,7 +1821,81 @@ function initializeEnhancedTerminal() {
   runImmersiveIntro();
 }
 
-// Set up event listeners when the page loads
+// Add this function to your script.js file
+function addStartInteraction() {
+  // Create an overlay
+  const interactionOverlay = document.createElement('div');
+  interactionOverlay.style.position = 'fixed';
+  interactionOverlay.style.top = '0';
+  interactionOverlay.style.left = '0';
+  interactionOverlay.style.width = '100%';
+  interactionOverlay.style.height = '100%';
+  interactionOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+  interactionOverlay.style.zIndex = '9999';
+  interactionOverlay.style.display = 'flex';
+  interactionOverlay.style.justifyContent = 'center';
+  interactionOverlay.style.alignItems = 'center';
+  interactionOverlay.style.flexDirection = 'column';
+  
+  // Create title
+  const title = document.createElement('div');
+  title.style.color = '#0f0';
+  title.style.fontFamily = "'Share Tech Mono', monospace";
+  title.style.fontSize = '24px';
+  title.style.marginBottom = '30px';
+  title.style.textShadow = '0 0 10px #0f0';
+  title.textContent = '> VOX RECRUITMENT TERMINAL';
+  
+  // Create button
+  const startButton = document.createElement('button');
+  startButton.className = 'button-terminal';
+  startButton.style.opacity = '1';  // Make sure it's visible
+  startButton.style.padding = '15px 30px';
+  startButton.style.fontSize = '18px';
+  startButton.style.backgroundColor = 'rgba(0, 30, 0, 0.5)';
+  startButton.style.border = '2px solid #0f0';
+  startButton.style.color = '#0f0';
+  startButton.style.fontFamily = "'Share Tech Mono', monospace";
+  startButton.style.cursor = 'pointer';
+  startButton.textContent = 'INITIALIZE TERMINAL';
+  
+  // Add hover effect
+  startButton.onmouseover = function() {
+    startButton.style.backgroundColor = 'rgba(0, 60, 0, 0.5)';
+    startButton.style.boxShadow = '0 0 15px #0f0';
+  };
+  startButton.onmouseout = function() {
+    startButton.style.backgroundColor = 'rgba(0, 30, 0, 0.5)';
+    startButton.style.boxShadow = 'none';
+  };
+  
+  // Add event listener
+  startButton.addEventListener('click', function() {
+    // Remove the overlay
+    document.body.removeChild(interactionOverlay);
+    
+    // Play a test sound to enable audio
+    const testSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_270f8ad054.mp3?filename=keyboard-typing-102351.mp3');
+    testSound.volume = 0.01; // Very quiet
+    testSound.play().catch(e => console.log('Audio error:', e));
+    
+    // Make main terminal visible
+    document.getElementById('mainTerminal').style.display = 'block';
+    
+    // Start the boot sequence
+    initializeEnhancedTerminal();
+  });
+  
+  // Add elements to the overlay
+  interactionOverlay.appendChild(title);
+  interactionOverlay.appendChild(startButton);
+  document.body.appendChild(interactionOverlay);
+  
+  // Hide the main terminal until interaction
+  document.getElementById('mainTerminal').style.display = 'none';
+}
+
+// Replace the window.addEventListener('load') function at the end of your script.js file with this:
 window.addEventListener('load', function() {
   // Set up command input events
   commandInput.addEventListener('keydown', (e) => {
@@ -1842,6 +1916,6 @@ window.addEventListener('load', function() {
     if (match) commandInput.value = match;
   }
   
-  // Initialize the enhanced terminal
-  initializeEnhancedTerminal();
+  // Instead of calling initializeEnhancedTerminal directly, call addStartInteraction
+  addStartInteraction();
 });
