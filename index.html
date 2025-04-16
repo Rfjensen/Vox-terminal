@@ -7,11 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Sound effects -->
   <audio id="dropSFX" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_90040b8425.mp3?filename=ui-confirmation-alert-1-130447.mp3" preload="auto"></audio>
+  
+  <!-- Animation layers -->
   <div class="background-glow"></div>
   <div class="particle-layer"></div>
   <div class="scanner-line"></div>
 
+  <!-- Main terminal -->
   <div class="terminal" id="mainTerminal">
     <div class="terminal-header">> VOX RECRUITMENT TERMINAL</div>
     <div class="clue-text" id="clue">"Speak the phrase hidden in this domain."</div>
@@ -19,13 +23,7 @@
     <div id="voiceFeedback"></div>
     <div id="mainOutput" class="output-log"></div>
     <div class="command-list" id="commandList" style="display:none;">
-> help
-> Available Commands:
-  - trace               ............ locate active node
-  - vox.status          ............ check diagnostics
-  - decrypt node        ............ solve cipher
-  - access.redacted     ............ decrypt VOX log
-  - vox.protocol.init   ............ [locked]
+      <!-- Commands will be populated by JavaScript -->
     </div>
     <div class="input-line">
       <input type="text" id="commandInput" placeholder="Enter command or answer...">
@@ -33,6 +31,7 @@
     <div id="unlockMessage"></div>
   </div>
 
+  <!-- Puzzle overlay -->
   <div class="terminal-overlay" id="puzzleOverlay">
     <div class="terminal-header">> PUZZLE TERMINAL</div>
     <div id="puzzleOutput">Decrypt this: R1 E2 D3 A4 C5 T6<br>Rearrange to unlock.</div>
@@ -41,7 +40,9 @@
     <button onclick="closePuzzle()">Close</button>
   </div>
 
+  <!-- Hacker noise display -->
   <div id="hackerNoise" class="trace-log-output"></div>
+  
   <script src="script.js"></script>
 </body>
 </html>
