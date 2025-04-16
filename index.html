@@ -45,10 +45,9 @@
       text-shadow: 0 0 10px #0f0;
     }
 
-    .riddle {
-      margin-bottom: 20px;
-      line-height: 1.6;
+    .typed-line {
       white-space: pre-wrap;
+      margin-bottom: 10px;
     }
 
     input[type="text"] {
@@ -88,14 +87,8 @@
 </head>
 <body>
   <div class="terminal">
-    <h1 id="intro">_</h1>
-    <div class="riddle hidden" id="riddleText">
-      Silence cuts, but not too deep.<br>
-      What VOX buries, it still keeps.<br>
-      Truth erased and sealed in pact—<br>
-      To gain access, type: _________.<br><br>
-      <strong>Fragment Code:</strong> A4 • D3 • T6 • E2 • C5 • R1
-    </div>
+    <h1 id="intro"></h1>
+    <div id="typeContainer"></div>
     <input type="text" id="passcode" placeholder="Enter passphrase..." class="hidden">
     <div class="response hidden" id="response"></div>
     <div><span class="blinking-cursor"></span></div>
@@ -106,13 +99,43 @@
   </audio>
 
   <script>
-    function typeText(element, text, callback) {
+    const lines = [
+      "> VOX RECRUITMENT TERMINAL", 
+      "\nSilence cuts, but not too deep.",
+      "What VOX buries, it still keeps.",
+      "Truth erased and sealed in pact—",
+      "To gain access, type: _________.",
+      "\nFragment Code: A4 • D3 • T6 • E2 • C5 • R1"
+    ];
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    const introEl = document.getElementById("intro");
+    const container = document.getElementById("typeContainer");
+    const input = document.getElementById("passcode");
+
+    function typeAllLines() {
+      if (lineIndex < lines.length) {
+        let line = document.createElement("div");
+        line.className = "typed-line";
+        container.appendChild(line);
+        typeLine(line, lines[lineIndex], () => {
+          lineIndex++;
+          typeAllLines();
+        });
+      } else {
+        input.classList.remove("hidden");
+        input.focus();
+      }
+    }
+
+    function typeLine(element, text, callback) {
       let i = 0;
       function type() {
         if (i < text.length) {
           element.textContent += text.charAt(i);
           i++;
-          setTimeout(type, 50);
+          setTimeout(type, 40);
         } else {
           callback();
         }
@@ -121,27 +144,19 @@
     }
 
     window.onload = () => {
-      const intro = document.getElementById("intro");
-      const riddle = document.getElementById("riddleText");
-      const input = document.getElementById("passcode");
-
-      typeText(intro, ">_ VOX RECRUITMENT TERMINAL", () => {
-        riddle.classList.remove("hidden");
-        input.classList.remove("hidden");
-        input.focus();
-      });
+      typeAllLines();
     };
 
     function checkKey(event) {
       if (event.key === "Enter") {
-        const input = document.getElementById("passcode").value.trim().toLowerCase();
+        const inputVal = document.getElementById("passcode").value.trim().toLowerCase();
         const responseBox = document.getElementById("response");
         responseBox.classList.remove("hidden");
 
-        if (input === "redact") {
+        if (inputVal === "redact") {
           responseBox.style.color = "#0f0";
           responseBox.innerText = "ACCESS GRANTED - Cipher Lock Verified.\nFurther instructions will follow.";
-        } else if (input === "oblivion") {
+        } else if (inputVal === "oblivion") {
           responseBox.style.color = "#f0f";
           responseBox.innerText = "[CLASSIFIED ACCESS]\nCipher recognized.\nWelcome back, Operative. The node is unstable.";
         } else {
@@ -155,4 +170,3 @@
   </script>
 </body>
 </html>
-
