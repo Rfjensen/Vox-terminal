@@ -209,20 +209,26 @@
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
-
+    
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.toLowerCase();
-        console.log("🧠 VOICE RECOGNITION DEBUG:", transcript); // Debug logger
+        console.log("🧠 VOICE RECOGNITION DEBUG:", transcript); // 👈 Logs what the user said
         if (transcript.includes("we listen to silence")) {
           document.getElementById('voiceFeedback').innerText = "Access granted.";
           voiceUnlocked = true;
           showHelp();
+    
+          // Cleanup: remove button + clue
+          document.querySelector('button').remove();
+          document.getElementById('clue').remove();
         } else {
           document.getElementById('voiceFeedback').innerText = "Access denied. Try again.";
         }
       };
+    
       recognition.start();
     }
+
 
     function showHelp() {
       commandList.style.display = 'block';
@@ -303,29 +309,37 @@
     }
 
     function runFinalSequence() {
-      hackerNoise.style.display = 'block';
+      output.innerHTML = '';
       let log = '';
       let count = 0;
+      const lines = [
+        'TRACE-URGUSZFE', 'TRACE-M004742EB', 'TRACE-32VJK2CJ', 'TRACE-M0TC2BUH', 'TRACE-XE1F2UO',
+        'TRACE-0354W052', 'TRACE-H33VYXG1', 'TRACE-YWBJ162R', 'TRACE-4BB4IT6', 'TRACE-Z07OKWFN',
+        'TRACE-91ZX9EL', 'TRACE-MARROW', 'TRACE-ULTRAVOX', 'TRACE-GR1DP0RT', 'TRACE-221NEON',
+        'TRACE-F1NDSIGNAL', 'TRACE-SYNTHEX', 'TRACE-NULLOVER', 'TRACE-ZEROCORE', 'TRACE-LOCKBRIDGE',
+        'TRACE-CIPHERNODE', 'TRACE-RUNPROTOCOL', 'TRACE-NETDRIFT', 'TRACE-PLANEHOLE', 'TRACE-V0X3234',
+        'TRACE-RFJVOXIO', 'TRACE-DECRYPTEX', 'TRACE-VAULTOPEN', 'TRACE-VXENTRY', 'TRACE-ECHOCONFIRM'
+      ];
+    
       const interval = setInterval(() => {
-        log += `> TRACE ${Math.random().toString(36).substring(2, 10).toUpperCase()} ... LINK STABILIZED\n`;
-        hackerNoise.textContent = log;
+        const code = lines[count];
+        log += `> ${code} .......... LINK STABILIZED<br>`;
+        output.innerHTML = log;
         count++;
-        if (count >= 10) {
+        if (count >= lines.length) {
           clearInterval(interval);
-          revealFinal();
+          setTimeout(revealFinal, 1000);
         }
-      }, 300);
+      }, 100);
     }
 
     function revealFinal() {
       const audio = document.getElementById('dropSFX');
       if (audio) audio.play();
     
-      const hackerNoise = document.getElementById('hackerNoise');
-      hackerNoise.innerHTML += `
-        <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
-        Meet Cipher-9 in Ember Row beneath the mural with no name.
-        <br><br>
+      document.getElementById('mainTerminal').style.display = 'none';
+    
+      document.body.innerHTML += `
         <div class="vox-id-card">
           <div class="crt"></div>
           <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
