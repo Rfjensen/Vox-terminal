@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOX Recruitment Terminal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
     body {
       margin: 0;
       padding: 0;
@@ -22,12 +22,10 @@
       background-size: 20px 20px;
       animation: flicker 3s infinite;
     }
-
     @keyframes flicker {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.97; }
     }
-
     .terminal {
       background-color: rgba(0, 0, 0, 0.9);
       padding: 40px;
@@ -36,20 +34,10 @@
       max-width: 800px;
       width: 90%;
     }
-
-    .terminal h1 {
-      font-size: 1.75rem;
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0f0;
-      text-shadow: 0 0 10px #0f0;
-    }
-
     .typed-line {
       white-space: pre-wrap;
       margin-bottom: 10px;
     }
-
     input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -60,17 +48,16 @@
       color: #0f0;
       outline: none;
       font-family: 'Share Tech Mono', monospace;
+      caret-color: #0f0;
+      animation: blinkCaret 1s steps(1) infinite;
     }
-
     .response {
       margin-top: 20px;
       white-space: pre-wrap;
     }
-
     .hidden {
       display: none;
     }
-
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -79,14 +66,17 @@
       animation: blink 1s step-start 0s infinite;
       vertical-align: bottom;
     }
-
     @keyframes blink {
       50% { opacity: 0; }
+    }
+    @keyframes blinkCaret {
+      0%, 100% { caret-color: #0f0; }
+      50% { caret-color: transparent; }
     }
   </style>
 </head>
 <body>
-  <div class="terminal">
+  <div class="terminal" id="terminal">
     <h1 id="intro"></h1>
     <div id="typeContainer"></div>
     <input type="text" id="passcode" placeholder="Enter passphrase..." class="hidden">
@@ -94,25 +84,24 @@
     <div><span class="blinking-cursor"></span></div>
   </div>
 
-  <audio id="ambient" autoplay loop>
+  <div class="terminal hidden" id="lore" style="white-space: pre-wrap;"></div>
+
+  <audio id="ambient" loop>
     <source src="https://cdn.pixabay.com/audio/2023/03/13/audio_923974273b.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     const lines = [
       "> VOX RECRUITMENT TERMINAL", 
-      "\nSilence cuts, but not too deep.",
-      "What VOX buries, it still keeps.",
-      "Truth erased and sealed in pact—",
-      "To gain access, type: _________.",
-      "\nFragment Code: A4 • D3 • T6 • E2 • C5 • R1"
+      "\nSpeak the phrase."
     ];
 
     let lineIndex = 0;
-    let charIndex = 0;
     const introEl = document.getElementById("intro");
     const container = document.getElementById("typeContainer");
     const input = document.getElementById("passcode");
+    const terminal = document.getElementById("terminal");
+    const loreOutput = document.getElementById("lore");
 
     function typeAllLines() {
       if (lineIndex < lines.length) {
@@ -124,8 +113,7 @@
           typeAllLines();
         });
       } else {
-        input.classList.remove("hidden");
-        input.focus();
+        initSpeechRecognition();
       }
     }
 
@@ -143,30 +131,117 @@
       type();
     }
 
-    window.onload = () => {
-      typeAllLines();
-    };
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        container.innerHTML += "\n[ ERROR: Speech recognition unsupported on this browser ]";
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
-    function checkKey(event) {
-      if (event.key === "Enter") {
-        const inputVal = document.getElementById("passcode").value.trim().toLowerCase();
-        const responseBox = document.getElementById("response");
-        responseBox.classList.remove("hidden");
+      container.innerHTML += "\n[ Awaiting Voice Input: Say 'we listen to silence' ]\n";
 
-        if (inputVal === "redact") {
-          responseBox.style.color = "#0f0";
-          responseBox.innerText = "ACCESS GRANTED - Cipher Lock Verified.\nFurther instructions will follow.";
-        } else if (inputVal === "oblivion") {
-          responseBox.style.color = "#f0f";
-          responseBox.innerText = "[CLASSIFIED ACCESS]\nCipher recognized.\nWelcome back, Operative. The node is unstable.";
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const spoken = event.results[0][0].transcript.toLowerCase();
+        if (spoken.includes("we listen to silence")) {
+          container.innerHTML += "\n[ ACCESS GRANTED: Proceeding to command interface... ]\n";
+          setTimeout(showCommandConsole, 2000);
         } else {
-          responseBox.style.color = "#f00";
-          responseBox.innerText = "ACCESS DENIED - Invalid Protocol.";
+          container.innerHTML += "\n[ INVALID PHRASE. Try again. ]\n";
+          recognition.start();
         }
+      };
+
+      recognition.onerror = (e) => {
+        container.innerHTML += `\n[ ERROR: ${e.error} ]\n`;
+      };
+    }
+
+    function showCommandConsole() {
+      terminal.innerHTML = `
+        <div style="white-space: pre-wrap;">
+        > INIT :: VOX Command Line Interface<br>
+        > Type 'help' for list of available commands.<br><br>
+        <input type="text" id="consoleInput" placeholder="Enter command..." autofocus>
+        <div id="consoleOutput"></div>
+        </div>`;
+
+      document.getElementById("consoleInput").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          handleCommand(this.value.toLowerCase());
+          this.value = "";
+        }
+      });
+    }
+
+    function handleCommand(cmd) {
+      const output = document.getElementById("consoleOutput");
+      const append = (text) => output.innerHTML += `> ${text}<br>`;
+
+      switch (cmd) {
+        case "help":
+          append("trace - locate active node");
+          append("vox.status - check internal diagnostics");
+          append("decrypt node - attempt to decode active shard");
+          append("access.redacted - retrieve scrambled log");
+          append("vox.protocol.init - run core VOX directive");
+          break;
+        case "trace":
+          append("NODE FOUND: SIGIL-37A \n LOCATION: UNDERGRID COMPLEX");
+          break;
+        case "vox.status":
+          append("VOX Uplink Active. Echo integrity: 72%. Silence signal present.");
+          break;
+        case "decrypt node":
+          append("DECODING...\nFragment: D3 • A4 • T6 • C5 • E2 • R1");
+          append("Hint: Order the keys to access the thread.");
+          break;
+        case "access.redacted":
+          append("// Begin Log //\nSubject: ██ INITIATED\nOrigin: ████ UNDERGRID\nContent: 'What is lost may still whisper.'\nCipher: █████\nEND FILE.");
+          break;
+        case "vox.protocol.init":
+          append("[ AUTH GRANTED - EXECUTING PROTOCOL INIT ]");
+          setTimeout(() => runFinalLore(), 2000);
+          break;
+        default:
+          append("Unrecognized command. Type 'help'");
       }
     }
 
-    document.getElementById("passcode").addEventListener("keypress", checkKey);
+    function runFinalLore() {
+      terminal.classList.add("hidden");
+      const lore = [
+        "> PROTOCOL INITIATED...", 
+        "\nYou have proven silence is your language.",
+        "You have passed unseen, unheard — as all VOX operatives must.",
+        "The Grid fractures, but in its cracks we find meaning.",
+        "Return to NODE-1134. The transmission has already begun...",
+        "Await further contact."
+      ];
+
+      loreOutput.classList.remove("hidden");
+      typeLore(lore, 0);
+    }
+
+    function typeLore(lines, i) {
+      if (i < lines.length) {
+        let line = document.createElement("div");
+        line.className = "typed-line";
+        loreOutput.appendChild(line);
+        typeLine(line, lines[i], () => typeLore(lines, i + 1));
+      }
+    }
+
+    window.onload = () => {
+      const ambient = document.getElementById("ambient");
+      document.body.addEventListener("click", () => ambient.play().catch(() => {}), { once: true });
+      typeAllLines();
+    };
   </script>
 </body>
 </html>
