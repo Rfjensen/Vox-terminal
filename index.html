@@ -32,10 +32,39 @@
       box-shadow: 0 0 30px #0f0;
       max-width: 800px;
       width: 90%;
+      opacity: 1;
+      transition: opacity 1.5s ease-in-out;
+    }
+    .terminal.fade-out {
+      opacity: 0;
     }
     .typed-line {
       white-space: pre-wrap;
       margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .glitch {
+      display: inline-block;
+      animation: glitchAnim 1s infinite;
+    }
+    @keyframes glitchAnim {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -1px); }
+      60% { transform: translate(-1px, 1px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(0, 0); }
+    }
+    .idcard {
+      border: 2px dashed #0f0;
+      margin-top: 30px;
+      padding: 20px;
+      text-align: center;
+      animation: fadeIn 2s ease forwards;
     }
     input[type="text"] {
       width: 100%;
@@ -94,14 +123,10 @@
 
   <div class="terminal hidden" id="commandTerminal">
     <div id="consoleDisplay"></div>
-    <input type="text" id="consoleInput" placeholder="Enter command..." autofocus>
+    <input type="text" id="consoleInput" placeholder="Enter command or answer..." autofocus>
   </div>
 
   <div class="terminal hidden" id="lore" style="white-space: pre-wrap;"></div>
-
-  <audio id="ambient" loop>
-    <source src="https://cdn.pixabay.com/audio/2023/03/13/audio_923974273b.mp3" type="audio/mpeg">
-  </audio>
 
   <script>
     const typeContainer = document.getElementById("typeContainer");
@@ -110,26 +135,33 @@
     const terminal = document.getElementById("terminal");
     const commandTerminal = document.getElementById("commandTerminal");
     const loreOutput = document.getElementById("lore");
+    const consoleDisplay = document.getElementById("consoleDisplay");
 
     let protocolUnlocked = false;
     let decryptedNode = false;
     let redactedAccessed = false;
+    let currentChallenge = null;
 
     const commands = {
       help: () => {
-        return `trace - locate active node\nvox.status - check diagnostics\ndecrypt node - solve cipher\naccess.redacted - decrypt VOX log\n` + (protocolUnlocked ? "vox.protocol.init - begin protocol" : "[locked] vox.protocol.init");
+        return (
+          "Available Commands:\n" +
+          " - trace ............... locate active node\n" +
+          " - vox.status .......... check diagnostics\n" +
+          " - decrypt node ........ solve cipher\n" +
+          " - access.redacted ..... decrypt VOX log\n" +
+          (protocolUnlocked ? " - vox.protocol.init .... begin protocol" : " - [locked] vox.protocol.init")
+        );
       },
       trace: () => "NODE TRACE: SIGIL-1134 ACTIVE",
       "vox.status": () => "UPLINK: STABLE\nGRID: INTERFERENCE DETECTED\nSILENCE SIGNAL: SYNCED",
       "decrypt node": () => {
-        decryptedNode = true;
-        unlockProtocol();
-        return "FRAGMENT: R1 • E2 • D3 • A4 • C5 • T6\nREORDER TO REVEAL ACCESS CODE";
+        currentChallenge = "cipher";
+        return "FRAGMENT: R1 • E2 • D3 • A4 • C5 • T6\nREORDER TO REVEAL ACCESS CODE:";
       },
       "access.redacted": () => {
-        redactedAccessed = true;
-        unlockProtocol();
-        return "LOG START:\nEntity ███ breached Undergrid\nRESPONSE: ██ DISPATCHED\n'WE LISTEN TO ██████.'";
+        currentChallenge = "redacted";
+        return "LOG DECRYPT: 'What is erased remains. Input the hidden word:'";
       },
       "vox.protocol.init": () => {
         if (!protocolUnlocked) return "ACCESS DENIED - Command not recognized.";
@@ -146,8 +178,7 @@
     }
 
     function printToConsole(text) {
-      const display = document.getElementById("consoleDisplay");
-      display.innerHTML += `> ${text}<br>`;
+      consoleDisplay.innerHTML += `> ${text}<br>`;
     }
 
     document.getElementById("consoleInput").addEventListener("keypress", function(e) {
@@ -155,6 +186,31 @@
         const cmd = this.value.trim().toLowerCase();
         this.value = "";
         printToConsole(cmd);
+
+        if (currentChallenge === "cipher") {
+          if (cmd === "redact") {
+            decryptedNode = true;
+            printToConsole("CIPHER ACCEPTED. NODE UNLOCKED.");
+            currentChallenge = null;
+            unlockProtocol();
+          } else {
+            printToConsole("CIPHER INVALID. Try again.");
+          }
+          return;
+        }
+
+        if (currentChallenge === "redacted") {
+          if (cmd === "silence") {
+            redactedAccessed = true;
+            printToConsole("PHRASE ACCEPTED. ACCESS GRANTED.");
+            currentChallenge = null;
+            unlockProtocol();
+          } else {
+            printToConsole("INCORRECT. Redaction not resolved.");
+          }
+          return;
+        }
+
         const output = commands[cmd];
         if (output) {
           printToConsole(typeof output === 'function' ? output() : output);
@@ -175,7 +231,7 @@
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      voiceFeedback.innerText = "Listening...";
+      voiceFeedback.innerText = "Listening... Speak the phrase hidden in this domain.";
       recognition.start();
 
       recognition.onresult = (event) => {
@@ -183,9 +239,12 @@
         if (transcript.includes("we listen to silence")) {
           voiceFeedback.innerText = "Voice recognized. Access granted.";
           setTimeout(() => {
-            terminal.classList.add("hidden");
-            commandTerminal.classList.remove("hidden");
-            document.getElementById("consoleInput").focus();
+            terminal.classList.add("fade-out");
+            setTimeout(() => {
+              terminal.classList.add("hidden");
+              commandTerminal.classList.remove("hidden");
+              document.getElementById("consoleInput").focus();
+            }, 1500);
           }, 2000);
         } else {
           voiceFeedback.innerText = "Access denied. Try again.";
@@ -198,15 +257,27 @@
     });
 
     function runFinalLore() {
-      commandTerminal.classList.add("hidden");
-      loreOutput.classList.remove("hidden");
-      const lines = [
-        "> PROTOCOL INITIATED...",
-        "\nYou have walked in shadow, now light the way.",
-        "Transmission node activated. Await directives.",
-        "\nReturn to the surface — but remember: Silence is the shield."
-      ];
-      typeLore(lines, 0);
+      commandTerminal.classList.add("fade-out");
+      setTimeout(() => {
+        commandTerminal.classList.add("hidden");
+        loreOutput.classList.remove("hidden");
+        const lines = [
+          "> PROTOCOL INITIATED...",
+          "\nSilence has shaped you.",
+          "The static no longer clouds your path.",
+          "Cipher-9 awaits your arrival.",
+          "Location: Ember Row — Look for the mural with no name."
+        ];
+        typeLore(lines, 0);
+
+        setTimeout(() => {
+          const id = document.createElement("div");
+          id.className = "idcard";
+          id.innerHTML = `\n:: VOX OPERATIVE ID ::<br><span class='glitch'>NODE ACCESS: GRANTED</span><br>CIPHER CODE: 9-BLK<br>SECTOR: UNDERGRID-04`;
+          loreOutput.appendChild(id);
+        }, 4000);
+
+      }, 1500);
     }
 
     function typeLore(lines, i) {
@@ -233,9 +304,6 @@
     }
 
     window.onload = () => {
-      const ambient = document.getElementById("ambient");
-      document.body.addEventListener("click", () => ambient.play().catch(() => {}), { once: true });
-
       const introLines = [
         "> Silence is the voice.\n",
         "> Read the fragments.\n",
