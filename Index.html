@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOX Recruitment Terminal</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #f00;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .terminal {
+      background-color: #111;
+      padding: 30px;
+      border: 2px solid #f00;
+      max-width: 700px;
+      width: 90%;
+      box-shadow: 0 0 20px #f00;
+    }
+    .terminal h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    .riddle, .response {
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      background: #000;
+      border: 1px solid #f00;
+      color: #f00;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal">
+    <h1>VOX RECRUITMENT TERMINAL</h1>
+    <div class="riddle">
+      "Silence cuts, but not too deep,"<br>
+      "What VOX buries, it still keeps."<br>
+      "Truth erased and sealed in pact—"<br>
+      "To gain access, type: _________."<br><br>
+      <strong>Fragment Code:</strong> A4 • D3 • T6 • E2 • C5 • R1
+    </div>
+    <input type="text" id="passcode" placeholder="Enter passphrase..." onkeypress="checkKey(event)">
+    <div class="response hidden" id="response"></div>
+  </div>
+
+  <script>
+    function checkKey(event) {
+      if (event.key === "Enter") {
+        const input = document.getElementById("passcode").value.trim().toLowerCase();
+        const responseBox = document.getElementById("response");
+        responseBox.classList.remove("hidden");
+
+        if (input === "redact") {
+          responseBox.style.color = "#0f0";
+          responseBox.innerText = "ACCESS GRANTED - Cipher Lock Verified. Further instructions will follow.";
+        } else {
+          responseBox.style.color = "#f00";
+          responseBox.innerText = "ACCESS DENIED - Invalid Protocol.";
+        }
+      }
+    }
+  </script>
+</body>
+</html>
