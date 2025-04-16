@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VOX Recruitment Terminal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -19,11 +19,6 @@
       overflow: hidden;
       background-image: radial-gradient(#0f0 1px, transparent 1px);
       background-size: 20px 20px;
-      animation: flicker 3s infinite;
-    }
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.97; }
     }
     .terminal {
       background-color: rgba(0, 0, 0, 0.9);
@@ -32,198 +27,120 @@
       box-shadow: 0 0 30px #0f0;
       max-width: 800px;
       width: 90%;
-      opacity: 1;
-      transition: opacity 1.5s ease-in-out;
     }
-    .terminal.fade-out {
-      opacity: 0;
-    }
-    .typed-line {
-      white-space: pre-wrap;
-      margin-bottom: 10px;
-      opacity: 0;
-      animation: fadeIn 1s forwards;
-    }
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-    .glitch {
-      display: inline-block;
-      animation: glitchAnim 1s infinite;
-    }
-    @keyframes glitchAnim {
-      0% { transform: translate(0, 0); }
-      20% { transform: translate(-2px, 2px); }
-      40% { transform: translate(2px, -1px); }
-      60% { transform: translate(-1px, 1px); }
-      80% { transform: translate(1px, -2px); }
-      100% { transform: translate(0, 0); }
-    }
-    .idcard {
-      border: 2px dashed #0f0;
-      margin-top: 30px;
-      padding: 20px;
-      text-align: center;
-      animation: fadeIn 2s ease forwards;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 1.1rem;
+    .terminal-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: #000;
+      padding: 30px;
+      border: 2px dashed #0f0;
+      z-index: 10;
+      display: none;
+    }
+    .terminal-header {
+      margin-bottom: 20px;
+      color: #0f0;
+      font-weight: bold;
+    }
+    .input-line {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .input-line input {
+      width: 100%;
+      background: transparent;
       border: none;
       border-bottom: 2px solid #0f0;
       color: #0f0;
-      outline: none;
-      font-family: 'Share Tech Mono', monospace;
-      caret-color: #0f0;
-      animation: blinkCaret 1s steps(1) infinite;
-    }
-    .response {
-      margin-top: 20px;
-      white-space: pre-wrap;
-    }
-    .hidden {
-      display: none;
-    }
-    .blinking-cursor {
-      display: inline-block;
-      width: 10px;
-      height: 18px;
-      background-color: #0f0;
-      animation: blink 1s step-start 0s infinite;
-      vertical-align: bottom;
-    }
-    button {
-      background: transparent;
-      color: #0f0;
-      border: 2px solid #0f0;
-      font-family: 'Share Tech Mono', monospace;
       font-size: 1rem;
-      padding: 8px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      outline: none;
+      padding: 8px;
+    }
+    .command-list {
+      white-space: pre;
+      font-family: 'Share Tech Mono', monospace;
+      line-height: 1.5;
       margin-top: 10px;
-      cursor: pointer;
+    }
+    .clue-text {
+      font-style: italic;
+      margin-bottom: 10px;
+      color: #0f0;
+    }
+    #unlockMessage {
+      margin-top: 15px;
+      color: #0f0;
+      font-weight: bold;
+    }
+    #hackerNoise {
+      display: none;
+      white-space: pre-wrap;
+      color: #0f0;
+      font-size: 0.85rem;
+      line-height: 1.3;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .blinking {
+      animation: blink 1s step-start infinite;
     }
     @keyframes blink {
       50% { opacity: 0; }
     }
-    @keyframes blinkCaret {
-      0%, 100% { caret-color: #0f0; }
-      50% { caret-color: transparent; }
-    }
   </style>
 </head>
 <body>
-  <div class="terminal" id="terminal">
-    <h1>> VOX RECRUITMENT TERMINAL</h1>
-    <div id="typeContainer"></div>
-    <button id="startVoice">INITIATE VOICE TRACE</button>
+  <div class="terminal" id="mainTerminal">
+    <div class="terminal-header">> VOX RECRUITMENT TERMINAL</div>
+    <div class="clue-text">"Speak the phrase hidden in this domain."</div>
+    <button onclick="startVoiceRecognition()">Start Voice Recognition</button>
     <div id="voiceFeedback"></div>
+    <div id="mainOutput"></div>
+    <div class="command-list" id="commandList" style="display:none;">
+> help
+> Available Commands:
+  - trace               ............ locate active node
+  - vox.status          ............ check diagnostics
+  - decrypt node        ............ solve cipher
+  - access.redacted     ............ decrypt VOX log
+  - vox.protocol.init   ............ [locked]
+    </div>
+    <div class="input-line">
+      <input type="text" id="commandInput" placeholder="Enter command or answer...">
+    </div>
+    <div id="unlockMessage"></div>
   </div>
 
-  <div class="terminal hidden" id="commandTerminal">
-    <div id="consoleDisplay"></div>
-    <input type="text" id="consoleInput" placeholder="Enter command or answer..." autofocus>
+  <div class="terminal-overlay" id="puzzleOverlay">
+    <div class="terminal-header">> PUZZLE TERMINAL</div>
+    <div id="puzzleOutput">Decrypt this: R1 E2 D3 A4 C5 T6<br>Rearrange to unlock.</div>
+    <input type="text" id="puzzleInput" placeholder="Enter solution...">
+    <button onclick="checkPuzzleSolution()">Submit</button>
+    <button onclick="closePuzzle()">Close</button>
   </div>
 
-  <div class="terminal hidden" id="lore" style="white-space: pre-wrap;"></div>
+  <div id="hackerNoise"></div>
 
   <script>
-    const typeContainer = document.getElementById("typeContainer");
-    const voiceButton = document.getElementById("startVoice");
-    const voiceFeedback = document.getElementById("voiceFeedback");
-    const terminal = document.getElementById("terminal");
-    const commandTerminal = document.getElementById("commandTerminal");
-    const loreOutput = document.getElementById("lore");
-    const consoleDisplay = document.getElementById("consoleDisplay");
+    const commandInput = document.getElementById('commandInput');
+    const commandList = document.getElementById('commandList');
+    const output = document.getElementById('mainOutput');
+    const unlockMessage = document.getElementById('unlockMessage');
+    const puzzleOverlay = document.getElementById('puzzleOverlay');
+    const puzzleInput = document.getElementById('puzzleInput');
+    const hackerNoise = document.getElementById('hackerNoise');
 
-    let protocolUnlocked = false;
-    let decryptedNode = false;
-    let redactedAccessed = false;
-    let currentChallenge = null;
+    let voiceUnlocked = false;
+    let puzzlesSolved = 0;
 
-    const commands = {
-      help: () => {
-        return (
-          "Available Commands:\n" +
-          " - trace ............... locate active node\n" +
-          " - vox.status .......... check diagnostics\n" +
-          " - decrypt node ........ solve cipher\n" +
-          " - access.redacted ..... decrypt VOX log\n" +
-          (protocolUnlocked ? " - vox.protocol.init .... begin protocol" : " - [locked] vox.protocol.init")
-        );
-      },
-      trace: () => "NODE TRACE: SIGIL-1134 ACTIVE",
-      "vox.status": () => "UPLINK: STABLE\nGRID: INTERFERENCE DETECTED\nSILENCE SIGNAL: SYNCED",
-      "decrypt node": () => {
-        currentChallenge = "cipher";
-        return "FRAGMENT: R1 • E2 • D3 • A4 • C5 • T6\nREORDER TO REVEAL ACCESS CODE:";
-      },
-      "access.redacted": () => {
-        currentChallenge = "redacted";
-        return "LOG DECRYPT: 'What is erased remains. Input the hidden word:'";
-      },
-      "vox.protocol.init": () => {
-        if (!protocolUnlocked) return "ACCESS DENIED - Command not recognized.";
-        runFinalLore();
-        return "[INITIATING PROTOCOL...]";
-      }
-    };
-
-    function unlockProtocol() {
-      if (decryptedNode && redactedAccessed && !protocolUnlocked) {
-        protocolUnlocked = true;
-        printToConsole("> vox.protocol.init now available");
-      }
-    }
-
-    function printToConsole(text) {
-      consoleDisplay.innerHTML += `> ${text}<br>`;
-    }
-
-    document.getElementById("consoleInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        const cmd = this.value.trim().toLowerCase();
-        this.value = "";
-        printToConsole(cmd);
-
-        if (currentChallenge === "cipher") {
-          if (cmd === "redact") {
-            decryptedNode = true;
-            printToConsole("CIPHER ACCEPTED. NODE UNLOCKED.");
-            currentChallenge = null;
-            unlockProtocol();
-          } else {
-            printToConsole("CIPHER INVALID. Try again.");
-          }
-          return;
-        }
-
-        if (currentChallenge === "redacted") {
-          if (cmd === "silence") {
-            redactedAccessed = true;
-            printToConsole("PHRASE ACCEPTED. ACCESS GRANTED.");
-            currentChallenge = null;
-            unlockProtocol();
-          } else {
-            printToConsole("INCORRECT. Redaction not resolved.");
-          }
-          return;
-        }
-
-        const output = commands[cmd];
-        if (output) {
-          printToConsole(typeof output === 'function' ? output() : output);
-        } else {
-          printToConsole("Unknown command. Type 'help'.");
-        }
-      }
-    });
-
-    voiceButton.addEventListener("click", () => {
+    function startVoiceRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        voiceFeedback.innerText = "Speech recognition not supported.";
+        document.getElementById('voiceFeedback').innerText = "Speech recognition not supported.";
         return;
       }
       const recognition = new SpeechRecognition();
@@ -231,86 +148,132 @@
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      voiceFeedback.innerText = "Listening... Speak the phrase hidden in this domain.";
-      recognition.start();
-
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.toLowerCase();
         if (transcript.includes("we listen to silence")) {
-          voiceFeedback.innerText = "Voice recognized. Access granted.";
-          setTimeout(() => {
-            terminal.classList.add("fade-out");
-            setTimeout(() => {
-              terminal.classList.add("hidden");
-              commandTerminal.classList.remove("hidden");
-              document.getElementById("consoleInput").focus();
-            }, 1500);
-          }, 2000);
+          document.getElementById('voiceFeedback').innerText = "Access granted.";
+          voiceUnlocked = true;
+          showHelp();
         } else {
-          voiceFeedback.innerText = "Access denied. Try again.";
+          document.getElementById('voiceFeedback').innerText = "Access denied. Try again.";
         }
       };
+      recognition.start();
+    }
 
-      recognition.onerror = (e) => {
-        voiceFeedback.innerText = `ERROR: ${e.error}`;
-      };
+    function showHelp() {
+      commandList.style.display = 'block';
+    }
+
+    commandInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const cmd = commandInput.value.trim().toLowerCase();
+        commandInput.value = '';
+        runCommand(cmd);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        autoCompleteCommand();
+      }
     });
 
-    function runFinalLore() {
-      commandTerminal.classList.add("fade-out");
-      setTimeout(() => {
-        commandTerminal.classList.add("hidden");
-        loreOutput.classList.remove("hidden");
-        const lines = [
-          "> PROTOCOL INITIATED...",
-          "\nSilence has shaped you.",
-          "The static no longer clouds your path.",
-          "Cipher-9 awaits your arrival.",
-          "Location: Ember Row — Look for the mural with no name."
-        ];
-        typeLore(lines, 0);
-
-        setTimeout(() => {
-          const id = document.createElement("div");
-          id.className = "idcard";
-          id.innerHTML = `\n:: VOX OPERATIVE ID ::<br><span class='glitch'>NODE ACCESS: GRANTED</span><br>CIPHER CODE: 9-BLK<br>SECTOR: UNDERGRID-04`;
-          loreOutput.appendChild(id);
-        }, 4000);
-
-      }, 1500);
+    function autoCompleteCommand() {
+      const val = commandInput.value.toLowerCase();
+      const commands = ['trace', 'vox.status', 'decrypt node', 'access.redacted', 'vox.protocol.init'];
+      const match = commands.find(c => c.startsWith(val));
+      if (match) commandInput.value = match;
     }
 
-    function typeLore(lines, i) {
-      if (i < lines.length) {
-        let line = document.createElement("div");
-        line.className = "typed-line";
-        loreOutput.appendChild(line);
-        typeLine(line, lines[i], () => typeLore(lines, i + 1));
+    function runCommand(cmd) {
+      if (!voiceUnlocked) {
+        output.innerHTML += `> ${cmd}<br>ACCESS DENIED<br>`;
+        return;
+      }
+
+      output.innerHTML += `> ${cmd}<br>`;
+
+      switch(cmd) {
+        case 'help':
+          showHelp();
+          break;
+        case 'trace':
+          output.innerHTML += 'NODE TRACE: SIGIL-1134 ACTIVE<br>';
+          break;
+        case 'vox.status':
+          output.innerHTML += 'UPLINK: STABLE<br>GRID: INTERFERENCE DETECTED<br>';
+          break;
+        case 'decrypt node':
+        case 'access.redacted':
+          openPuzzle();
+          break;
+        case 'vox.protocol.init':
+          if (puzzlesSolved >= 2) {
+            runFinalSequence();
+          } else {
+            output.innerHTML += 'Command Locked. Solve required puzzles.<br>';
+          }
+          break;
+        default:
+          output.innerHTML += 'Unknown command. Type \"help\".<br>';
       }
     }
 
-    function typeLine(element, text, callback) {
-      let i = 0;
-      function type() {
-        if (i < text.length) {
-          element.textContent += text.charAt(i);
-          i++;
-          setTimeout(type, 40);
-        } else {
-          callback();
+    function openPuzzle() {
+      puzzleOverlay.style.display = 'block';
+    }
+
+    function closePuzzle() {
+      puzzleOverlay.style.display = 'none';
+    }
+
+    function checkPuzzleSolution() {
+      const answer = puzzleInput.value.trim().toLowerCase();
+      if (answer === 'redact' || answer === 'silence') {
+        output.innerHTML += `PUZZLE SOLVED: ${answer.toUpperCase()}<br>`;
+        puzzlesSolved++;
+        closePuzzle();
+        if (puzzlesSolved >= 2) {
+          unlockMessage.innerHTML = '> vox.protocol.init is now unlocked';
         }
+      } else {
+        puzzleOverlay.querySelector('#puzzleOutput').innerHTML += '<br>Incorrect. Try again.';
       }
-      type();
     }
 
-    window.onload = () => {
-      const introLines = [
-        "> Silence is the voice.\n",
-        "> Read the fragments.\n",
-        "> The name of this place holds the key.\n"
-      ];
-      typeLore(introLines, 0);
-    };
+    function runFinalSequence() {
+      hackerNoise.style.display = 'block';
+      let log = '';
+      let count = 0;
+      const interval = setInterval(() => {
+        log += `> TRACE ${Math.random().toString(36).substring(2, 10).toUpperCase()} ... LINK STABILIZED\n`;
+        hackerNoise.textContent = log;
+        count++;
+        if (count >= 10) {
+          clearInterval(interval);
+          revealFinal();
+        }
+      }, 300);
+    }
+
+    function revealFinal() {
+      hackerNoise.innerHTML += `
+        <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
+        Meet Cipher-9 in Ember Row beneath the mural with no name.
+        <br><br>
+        <div style="border: 2px solid #0f0; padding: 16px; margin-top: 20px; max-width: 320px; background: rgba(0,0,0,0.8); font-family: 'Share Tech Mono', monospace;">
+          <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
+          <div style="margin-top: 8px;">
+            <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
+            <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
+            <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
+            <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
+          </div>
+          <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
+            Transmission secured.<br>
+            Echo node authentication confirmed.
+          </div>
+        </div>
+      `;
+    }
   </script>
 </body>
 </html>
