@@ -91,6 +91,27 @@
     @keyframes blink {
       50% { opacity: 0; }
     }
+    @keyframes dropIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+}
+
+.vox-id-card {
+  border: 2px solid #0f0;
+  padding: 16px;
+  margin-top: 20px;
+  max-width: 320px;
+  background: rgba(0,0,0,0.8);
+  font-family: 'Share Tech Mono', monospace;
+  animation: dropIn 0.8s ease-out forwards;
+}
+
   </style>
 </head>
 <body>
@@ -255,24 +276,24 @@
     }
 
     function revealFinal() {
-      hackerNoise.innerHTML += `
-        <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
-        Meet Cipher-9 in Ember Row beneath the mural with no name.
-        <br><br>
-        <div style="border: 2px solid #0f0; padding: 16px; margin-top: 20px; max-width: 320px; background: rgba(0,0,0,0.8); font-family: 'Share Tech Mono', monospace;">
-          <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
-          <div style="margin-top: 8px;">
-            <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
-            <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
-            <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
-            <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
-          </div>
-          <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
-            Transmission secured.<br>
-            Echo node authentication confirmed.
-          </div>
+       hackerNoise.innerHTML += `
+      <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
+      Meet Cipher-9 in Ember Row beneath the mural with no name.
+      <br><br>
+      <div class="vox-id-card">
+        <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
+        <div style="margin-top: 8px;">
+          <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
+          <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
+          <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
+          <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
         </div>
-      `;
+        <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
+          Transmission secured.<br>
+          Echo node authentication confirmed.
+        </div>
+      </div>
+    `;
     }
   </script>
 </body>
