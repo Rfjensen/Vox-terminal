@@ -11,6 +11,26 @@ let voiceUnlocked = false;
 let puzzlesSolved = 0;
 
 function startVoiceRecognition() {
+  // Add a button that says "Type password instead"
+  const typeOption = document.createElement('button');
+  typeOption.textContent = "Type password instead";
+  typeOption.className = "button-terminal";
+  typeOption.onclick = function() {
+    const password = prompt("Enter the secret phrase:");
+    if (password && password.toLowerCase().includes("we listen to silence")) {
+      document.getElementById('voiceFeedback').innerText = "Access granted.";
+      voiceUnlocked = true;
+      showHelp();
+      document.getElementById('startBtn').remove();
+      document.getElementById('clue').remove();
+      typeOption.remove();
+    } else {
+      document.getElementById('voiceFeedback').innerText = "Access denied. Try again.";
+    }
+  };
+  document.getElementById('mainTerminal').appendChild(typeOption);
+  
+  // Original voice recognition code
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     document.getElementById('voiceFeedback').innerText = "Speech recognition not supported.";
