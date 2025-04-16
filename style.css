@@ -238,7 +238,6 @@ body {
 
 /* 7. ENHANCED TEXT ANIMATIONS */
 .clue-text, #startBtn {
-  opacity: 0;
   transition: opacity 0.5s ease;
 }
 
