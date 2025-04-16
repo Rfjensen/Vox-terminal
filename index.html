@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,6 +65,16 @@
       animation: blink 1s step-start 0s infinite;
       vertical-align: bottom;
     }
+    button {
+      background: transparent;
+      color: #0f0;
+      border: 2px solid #0f0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1rem;
+      padding: 8px 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
     @keyframes blink {
       50% { opacity: 0; }
     }
@@ -77,11 +86,15 @@
 </head>
 <body>
   <div class="terminal" id="terminal">
-    <h1 id="intro"></h1>
+    <h1>> VOX RECRUITMENT TERMINAL</h1>
     <div id="typeContainer"></div>
-    <input type="text" id="passcode" placeholder="Enter passphrase..." class="hidden">
-    <div class="response hidden" id="response"></div>
-    <div><span class="blinking-cursor"></span></div>
+    <button id="startVoice">INITIATE VOICE TRACE</button>
+    <div id="voiceFeedback"></div>
+  </div>
+
+  <div class="terminal hidden" id="commandTerminal">
+    <div id="consoleDisplay"></div>
+    <input type="text" id="consoleInput" placeholder="Enter command..." autofocus>
   </div>
 
   <div class="terminal hidden" id="lore" style="white-space: pre-wrap;"></div>
@@ -91,29 +104,117 @@
   </audio>
 
   <script>
-    const lines = [
-      "> VOX RECRUITMENT TERMINAL", 
-      "\nSpeak the phrase."
-    ];
-
-    let lineIndex = 0;
-    const introEl = document.getElementById("intro");
-    const container = document.getElementById("typeContainer");
-    const input = document.getElementById("passcode");
+    const typeContainer = document.getElementById("typeContainer");
+    const voiceButton = document.getElementById("startVoice");
+    const voiceFeedback = document.getElementById("voiceFeedback");
     const terminal = document.getElementById("terminal");
+    const commandTerminal = document.getElementById("commandTerminal");
     const loreOutput = document.getElementById("lore");
 
-    function typeAllLines() {
-      if (lineIndex < lines.length) {
+    let protocolUnlocked = false;
+    let decryptedNode = false;
+    let redactedAccessed = false;
+
+    const commands = {
+      help: () => {
+        return `trace - locate active node\nvox.status - check diagnostics\ndecrypt node - solve cipher\naccess.redacted - decrypt VOX log\n` + (protocolUnlocked ? "vox.protocol.init - begin protocol" : "[locked] vox.protocol.init");
+      },
+      trace: () => "NODE TRACE: SIGIL-1134 ACTIVE",
+      "vox.status": () => "UPLINK: STABLE\nGRID: INTERFERENCE DETECTED\nSILENCE SIGNAL: SYNCED",
+      "decrypt node": () => {
+        decryptedNode = true;
+        unlockProtocol();
+        return "FRAGMENT: R1 • E2 • D3 • A4 • C5 • T6\nREORDER TO REVEAL ACCESS CODE";
+      },
+      "access.redacted": () => {
+        redactedAccessed = true;
+        unlockProtocol();
+        return "LOG START:\nEntity ███ breached Undergrid\nRESPONSE: ██ DISPATCHED\n'WE LISTEN TO ██████.'";
+      },
+      "vox.protocol.init": () => {
+        if (!protocolUnlocked) return "ACCESS DENIED - Command not recognized.";
+        runFinalLore();
+        return "[INITIATING PROTOCOL...]";
+      }
+    };
+
+    function unlockProtocol() {
+      if (decryptedNode && redactedAccessed && !protocolUnlocked) {
+        protocolUnlocked = true;
+        printToConsole("> vox.protocol.init now available");
+      }
+    }
+
+    function printToConsole(text) {
+      const display = document.getElementById("consoleDisplay");
+      display.innerHTML += `> ${text}<br>`;
+    }
+
+    document.getElementById("consoleInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        const cmd = this.value.trim().toLowerCase();
+        this.value = "";
+        printToConsole(cmd);
+        const output = commands[cmd];
+        if (output) {
+          printToConsole(typeof output === 'function' ? output() : output);
+        } else {
+          printToConsole("Unknown command. Type 'help'.");
+        }
+      }
+    });
+
+    voiceButton.addEventListener("click", () => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceFeedback.innerText = "Speech recognition not supported.";
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      voiceFeedback.innerText = "Listening...";
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        if (transcript.includes("we listen to silence")) {
+          voiceFeedback.innerText = "Voice recognized. Access granted.";
+          setTimeout(() => {
+            terminal.classList.add("hidden");
+            commandTerminal.classList.remove("hidden");
+            document.getElementById("consoleInput").focus();
+          }, 2000);
+        } else {
+          voiceFeedback.innerText = "Access denied. Try again.";
+        }
+      };
+
+      recognition.onerror = (e) => {
+        voiceFeedback.innerText = `ERROR: ${e.error}`;
+      };
+    });
+
+    function runFinalLore() {
+      commandTerminal.classList.add("hidden");
+      loreOutput.classList.remove("hidden");
+      const lines = [
+        "> PROTOCOL INITIATED...",
+        "\nYou have walked in shadow, now light the way.",
+        "Transmission node activated. Await directives.",
+        "\nReturn to the surface — but remember: Silence is the shield."
+      ];
+      typeLore(lines, 0);
+    }
+
+    function typeLore(lines, i) {
+      if (i < lines.length) {
         let line = document.createElement("div");
         line.className = "typed-line";
-        container.appendChild(line);
-        typeLine(line, lines[lineIndex], () => {
-          lineIndex++;
-          typeAllLines();
-        });
-      } else {
-        initSpeechRecognition();
+        loreOutput.appendChild(line);
+        typeLine(line, lines[i], () => typeLore(lines, i + 1));
       }
     }
 
@@ -131,116 +232,16 @@
       type();
     }
 
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        container.innerHTML += "\n[ ERROR: Speech recognition unsupported on this browser ]";
-        return;
-      }
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      container.innerHTML += "\n[ Awaiting Voice Input: Say 'we listen to silence' ]\n";
-
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        const spoken = event.results[0][0].transcript.toLowerCase();
-        if (spoken.includes("we listen to silence")) {
-          container.innerHTML += "\n[ ACCESS GRANTED: Proceeding to command interface... ]\n";
-          setTimeout(showCommandConsole, 2000);
-        } else {
-          container.innerHTML += "\n[ INVALID PHRASE. Try again. ]\n";
-          recognition.start();
-        }
-      };
-
-      recognition.onerror = (e) => {
-        container.innerHTML += `\n[ ERROR: ${e.error} ]\n`;
-      };
-    }
-
-    function showCommandConsole() {
-      terminal.innerHTML = `
-        <div style="white-space: pre-wrap;">
-        > INIT :: VOX Command Line Interface<br>
-        > Type 'help' for list of available commands.<br><br>
-        <input type="text" id="consoleInput" placeholder="Enter command..." autofocus>
-        <div id="consoleOutput"></div>
-        </div>`;
-
-      document.getElementById("consoleInput").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-          handleCommand(this.value.toLowerCase());
-          this.value = "";
-        }
-      });
-    }
-
-    function handleCommand(cmd) {
-      const output = document.getElementById("consoleOutput");
-      const append = (text) => output.innerHTML += `> ${text}<br>`;
-
-      switch (cmd) {
-        case "help":
-          append("trace - locate active node");
-          append("vox.status - check internal diagnostics");
-          append("decrypt node - attempt to decode active shard");
-          append("access.redacted - retrieve scrambled log");
-          append("vox.protocol.init - run core VOX directive");
-          break;
-        case "trace":
-          append("NODE FOUND: SIGIL-37A \n LOCATION: UNDERGRID COMPLEX");
-          break;
-        case "vox.status":
-          append("VOX Uplink Active. Echo integrity: 72%. Silence signal present.");
-          break;
-        case "decrypt node":
-          append("DECODING...\nFragment: D3 • A4 • T6 • C5 • E2 • R1");
-          append("Hint: Order the keys to access the thread.");
-          break;
-        case "access.redacted":
-          append("// Begin Log //\nSubject: ██ INITIATED\nOrigin: ████ UNDERGRID\nContent: 'What is lost may still whisper.'\nCipher: █████\nEND FILE.");
-          break;
-        case "vox.protocol.init":
-          append("[ AUTH GRANTED - EXECUTING PROTOCOL INIT ]");
-          setTimeout(() => runFinalLore(), 2000);
-          break;
-        default:
-          append("Unrecognized command. Type 'help'");
-      }
-    }
-
-    function runFinalLore() {
-      terminal.classList.add("hidden");
-      const lore = [
-        "> PROTOCOL INITIATED...", 
-        "\nYou have proven silence is your language.",
-        "You have passed unseen, unheard — as all VOX operatives must.",
-        "The Grid fractures, but in its cracks we find meaning.",
-        "Return to NODE-1134. The transmission has already begun...",
-        "Await further contact."
-      ];
-
-      loreOutput.classList.remove("hidden");
-      typeLore(lore, 0);
-    }
-
-    function typeLore(lines, i) {
-      if (i < lines.length) {
-        let line = document.createElement("div");
-        line.className = "typed-line";
-        loreOutput.appendChild(line);
-        typeLine(line, lines[i], () => typeLore(lines, i + 1));
-      }
-    }
-
     window.onload = () => {
       const ambient = document.getElementById("ambient");
       document.body.addEventListener("click", () => ambient.play().catch(() => {}), { once: true });
-      typeAllLines();
+
+      const introLines = [
+        "> Silence is the voice.\n",
+        "> Read the fragments.\n",
+        "> The name of this place holds the key.\n"
+      ];
+      typeLore(introLines, 0);
     };
   </script>
 </body>
