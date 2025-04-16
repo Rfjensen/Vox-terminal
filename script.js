@@ -1,4 +1,492 @@
-.map((char, index) => {
+// ------ CORE VARIABLES & FUNCTIONS ------
+const commandInput = document.getElementById('commandInput');
+const commandList = document.getElementById('commandList');
+const output = document.getElementById('mainOutput');
+const unlockMessage = document.getElementById('unlockMessage');
+const puzzleOverlay = document.getElementById('puzzleOverlay');
+const puzzleInput = document.getElementById('puzzleInput');
+const hackerNoise = document.getElementById('hackerNoise');
+
+let voiceUnlocked = false;
+let puzzlesSolved = 0;
+
+function startVoiceRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById('voiceFeedback').innerText = "Speech recognition not supported.";
+    return;
+  }
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript.toLowerCase();
+    console.log("🧠 VOICE RECOGNITION DEBUG:", transcript);
+    if (transcript.includes("we listen to silence")) {
+      document.getElementById('voiceFeedback').innerText = "Access granted.";
+      voiceUnlocked = true;
+      showHelp();
+      document.getElementById('startBtn').remove();
+      document.getElementById('clue').remove();
+    } else {
+      document.getElementById('voiceFeedback').innerText = "Access denied. Try again.";
+    }
+  };
+  recognition.start();
+}
+
+function showHelp() {
+  commandList.style.display = 'block';
+}
+
+function openPuzzle() {
+  puzzleOverlay.style.display = 'block';
+}
+
+function closePuzzle() {
+  puzzleOverlay.style.display = 'none';
+}
+
+// Original checkPuzzleSolution function (will be overridden by enhanced version)
+function checkPuzzleSolution() {
+  const answer = puzzleInput.value.trim().toLowerCase();
+  if (answer === 'redact' || answer === 'silence') {
+    output.innerHTML += `PUZZLE SOLVED: ${answer.toUpperCase()}<br>`;
+    puzzlesSolved++;
+    closePuzzle();
+    if (puzzlesSolved >= 2) {
+      unlockMessage.innerHTML = '> vox.protocol.init is now unlocked';
+    }
+  } else {
+    puzzleOverlay.querySelector('#puzzleOutput').innerHTML += '<br>Incorrect. Try again.';
+  }
+}
+
+function runFinalSequence() {
+  output.innerHTML = '';
+  let log = '';
+  let count = 0;
+  const lines = Array.from({ length: 30 }, (_, i) => `TRACE-${Math.random().toString(36).substring(2, 10).toUpperCase()}`);
+  const interval = setInterval(() => {
+    const code = lines[count];
+    log += `> ${code} .......... LINK STABILIZED<br>`;
+    output.innerHTML = log;
+    count++;
+    if (count >= lines.length) {
+      clearInterval(interval);
+      setTimeout(revealFinal, 1000);
+    }
+  }, 100);
+}
+
+function revealFinal() {
+  const audio = document.getElementById('dropSFX');
+  if (audio) audio.play();
+  document.getElementById('mainTerminal').style.display = 'none';
+  document.body.innerHTML += `
+    <div class="vox-id-card">
+      <div class="crt"></div>
+      <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
+      <div style="margin-top: 8px;">
+        <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
+        <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
+        <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
+        <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
+      </div>
+      <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
+        Transmission secured.<br>
+        Echo node authentication confirmed.
+      </div>
+    </div>
+  `;
+}
+
+// ------ ENHANCED TERMINAL FUNCTIONS ------
+
+// 1. NEON GRID GLOW FLICKER
+function addGridFlicker() {
+  // Create and add the flicker element
+  const flickerOverlay = document.createElement('div');
+  flickerOverlay.className = 'grid-flicker';
+  document.body.appendChild(flickerOverlay);
+  
+  // Start the random flickers
+  setInterval(() => {
+    if (Math.random() > 0.8) {
+      flickerOverlay.style.opacity = (Math.random() * 0.5).toString();
+      setTimeout(() => {
+        flickerOverlay.style.opacity = '0';
+      }, 100 + Math.random() * 200);
+    }
+  }, 2000);
+}
+
+// 2. TERMINAL BOOT SEQUENCE
+function runBootSequence() {
+  const terminal = document.getElementById('mainTerminal');
+  terminal.classList.add('booting');
+  
+  // Add boot text to the output
+  const bootMessages = [
+    '> SYSTEM INITIALIZATION',
+    '> LOADING VOX PROTOCOLS...',
+    '> ESTABLISHING SECURE CONNECTION',
+    '> SCANNING FOR ACTIVE NODES',
+    '> ACTIVATING TERMINAL INTERFACE'
+  ];
+  
+  let count = 0;
+  const bootInterval = setInterval(() => {
+    if (count < bootMessages.length) {
+      output.innerHTML += bootMessages[count] + '<br>';
+      playTypeSound();
+      count++;
+    } else {
+      clearInterval(bootInterval);
+      terminal.classList.remove('booting');
+      terminal.classList.add('boot-complete');
+      
+      // Show the initial prompt after boot
+      setTimeout(() => {
+        document.querySelector('.clue-text').style.opacity = '1';
+        document.getElementById('startBtn').style.opacity = '1';
+      }, 500);
+    }
+  }, 700);
+}
+
+// 3. HACKING ANIMATION WITH GLYPHS
+function simulateHacking(duration = 3000, callback = null) {
+  hackerNoise.style.display = 'block';
+  hackerNoise.innerHTML = '';
+  
+  const glyphs = "⌘⌥⎇⎋⌫⌦⌁⌄↵⏎⎮░▒▓█▓▒░◢◣◤◥■□●○◆◇▣▢▪▫●✱✲✳✴✵✶✷✸❖⨁⨂";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,./<>?";
+  const all = glyphs + characters;
+  let count = 0;
+  
+  const interval = setInterval(() => {
+    let line = '';
+    // Occasionally inject VOX related words
+    if (Math.random() < 0.2) {
+      const words = ["VOX", "SILENCE", "CIPHER", "NODE", "ECHO", "PROTOCOL", "SIGNAL", "TRACE", "REDACT"];
+      const word = words[Math.floor(Math.random() * words.length)];
+      const pos = Math.floor(Math.random() * 40);
+      
+      for (let i = 0; i < 60; i++) {
+        if (i >= pos && i < pos + word.length) {
+          line += word[i - pos];
+        } else {
+          line += all.charAt(Math.floor(Math.random() * all.length));
+        }
+      }
+    } else {
+      for (let i = 0; i < 60; i++) {
+        line += all.charAt(Math.floor(Math.random() * all.length));
+      }
+    }
+    
+    hackerNoise.innerHTML += `${line}<br>`;
+    hackerNoise.scrollTop = hackerNoise.scrollHeight;
+    
+    count++;
+    if (count > 20 || (duration && count > duration / 100)) {
+      clearInterval(interval);
+      setTimeout(() => {
+        hackerNoise.style.display = 'none';
+        if (callback) callback();
+      }, 500);
+    }
+  }, 100);
+}
+
+// 4. DATA PARTICLE CLOUD
+function initializeParticles() {
+  const particleContainer = document.createElement('div');
+  particleContainer.className = 'particle-container';
+  document.body.appendChild(particleContainer);
+  
+  // Create particles
+  for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'data-particle';
+    
+    // Random initial position
+    particle.style.left = Math.random() * 100 + 'vw';
+    particle.style.top = Math.random() * 100 + 'vh';
+    
+    // Random size
+    const size = 2 + Math.random() * 4;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    
+    // Random animation duration
+    const duration = 10 + Math.random() * 20;
+    particle.style.animationDuration = duration + 's';
+    
+    // Random delay
+    particle.style.animationDelay = Math.random() * 10 + 's';
+    
+    particleContainer.appendChild(particle);
+  }
+}
+
+// 5. SCANNER LINE EFFECT
+function activateScannerLine() {
+  const scanner = document.querySelector('.scanner-line');
+  scanner.style.display = 'block';
+  
+  setTimeout(() => {
+    scanner.style.top = '100%';
+    
+    // Hide after scan completes
+    setTimeout(() => {
+      scanner.style.display = 'none';
+      scanner.style.top = '0';
+    }, 2000);
+  }, 100);
+}
+
+// 6. PULSE EFFECT FOR SUCCESS
+function createSuccessPulse(element) {
+  const pulseElement = document.createElement('div');
+  pulseElement.className = 'success-pulse';
+  
+  // Position relative to element
+  const rect = element.getBoundingClientRect();
+  pulseElement.style.left = (rect.left + rect.width / 2) + 'px';
+  pulseElement.style.top = (rect.top + rect.height / 2) + 'px';
+  
+  document.body.appendChild(pulseElement);
+  
+  // Remove after animation
+  setTimeout(() => {
+    pulseElement.remove();
+  }, 2000);
+}
+
+// 7. NETWORK NODE VISUALIZATION
+function visualizeNetworkConnection(callback) {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'network-canvas';
+  canvas.width = 400;
+  canvas.height = 200;
+  
+  output.appendChild(canvas);
+  
+  const ctx = canvas.getContext('2d');
+  const nodes = [];
+  
+  // Create nodes
+  for (let i = 0; i < 8; i++) {
+    nodes.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: 4 + Math.random() * 4,
+      connected: false
+    });
+  }
+  
+  // Target node (VOX node)
+  const targetNode = {
+    x: canvas.width * 0.8,
+    y: canvas.height * 0.5,
+    size: 8,
+    connected: false
+  };
+  nodes.push(targetNode);
+  
+  let frameCount = 0;
+  
+  const animate = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background grid
+    ctx.strokeStyle = 'rgba(0, 255, 0, 0.1)';
+    ctx.lineWidth = 0.5;
+    
+    for (let i = 0; i < canvas.width; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, canvas.height);
+      ctx.stroke();
+    }
+    
+    for (let i = 0; i < canvas.height; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(canvas.width, i);
+      ctx.stroke();
+    }
+    
+    // Draw connections
+    ctx.strokeStyle = '#0f0';
+    ctx.lineWidth = 1;
+    
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].connected) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[0].x, nodes[0].y);
+        ctx.lineTo(nodes[i].x, nodes[i].y);
+        ctx.stroke();
+      }
+    }
+    
+    // Draw nodes
+    for (let i = 0; i < nodes.length; i++) {
+      ctx.fillStyle = i === nodes.length - 1 ? '#ff0' : '#0f0';
+      ctx.beginPath();
+      ctx.arc(nodes[i].x, nodes[i].y, nodes[i].size, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Add pulse effect to target node
+      if (i === nodes.length - 1) {
+        ctx.strokeStyle = 'rgba(255, 255, 0, ' + (0.5 + Math.sin(frameCount * 0.1) * 0.5) + ')';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(nodes[i].x, nodes[i].y, nodes[i].size + 5 + Math.sin(frameCount * 0.1) * 3, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    
+    // Connect nodes gradually
+    if (frameCount % 15 === 0 && frameCount < nodes.length * 15) {
+      const nodeIndex = Math.floor(frameCount / 15);
+      if (nodeIndex < nodes.length) {
+        nodes[nodeIndex].connected = true;
+        playNodeConnectSound();
+      }
+    }
+    
+    frameCount++;
+    
+    // Check if completed
+    if (frameCount < 200) {
+      requestAnimationFrame(animate);
+    } else {
+      // Draw final "connected" state
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      if (callback) callback();
+    }
+  };
+  
+  animate();
+}
+
+// 8. SHOW HIDDEN MESSAGE (that requires highlighting)
+function addHiddenMessage() {
+  const hiddenDiv = document.createElement('div');
+  hiddenDiv.textContent = "THE SILENT ONES ARE WATCHING";
+  hiddenDiv.className = 'hidden-message';
+  
+  output.appendChild(hiddenDiv);
+  output.innerHTML += '<br><small style="color: #555">[Select text above to reveal hidden message]</small><br>';
+}
+
+// 9. TYPE WRITER EFFECT FOR RESPONSES
+function typeWriterEffect(element, text, speed = 30, callback = null) {
+  let i = 0;
+  element.innerHTML = '';
+  
+  function type() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    } else if (callback) {
+      callback();
+    }
+  }
+  
+  type();
+}
+
+// 10. COUNTDOWN TIMER EFFECT
+function addCountdownTimer(seconds, onComplete = null) {
+  const timerElement = document.createElement('div');
+  timerElement.className = 'countdown-timer';
+  timerElement.textContent = `SECURITY LOCKDOWN IN: ${seconds} SECONDS`;
+  
+  document.getElementById('mainTerminal').appendChild(timerElement);
+  
+  let timeLeft = seconds;
+  
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+    timerElement.textContent = `SECURITY LOCKDOWN IN: ${timeLeft} SECONDS`;
+    
+    if (timeLeft <= 10) {
+      timerElement.classList.add('critical');
+    }
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerElement.textContent = 'LOCKDOWN INITIATED';
+      
+      if (onComplete) {
+        onComplete();
+      }
+    }
+  }, 1000);
+  
+  // Return a function to cancel the timer
+  return function cancelTimer() {
+    clearInterval(timerInterval);
+    timerElement.textContent = 'SECURITY OVERRIDE SUCCESSFUL';
+    timerElement.className = 'countdown-timer success';
+  };
+}
+
+// 11. SOUND EFFECTS
+function playTypeSound() {
+  // Simple keyboard click sound
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_270f8ad054.mp3?filename=keyboard-typing-102351.mp3');
+  audio.volume = 0.2;
+  audio.play();
+}
+
+function playErrorSound() {
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2021/08/04/audio_749a8ec0fd.mp3?filename=incorrect-buzz-1-131657.mp3');
+  audio.volume = 0.3;
+  audio.play();
+}
+
+function playSuccessSound() {
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2021/08/09/audio_12b0c19614.mp3?filename=success-1-6297.mp3');
+  audio.play();
+}
+
+function playNodeConnectSound() {
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_3324a21ffe.mp3?filename=ping-1-141270.mp3');
+  audio.volume = 0.1;
+  audio.play();
+}
+
+function playAlarmSound() {
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_add7c36093.mp3?filename=alarm-clock-short-6402.mp3');
+  audio.loop = true;
+  audio.play();
+  
+  return function stopAlarm() {
+    audio.pause();
+    audio.loop = false;
+  };
+}
+
+// 12. DECRYPT TEXT ANIMATION
+function decryptTextEffect(element, finalText, duration = 2000) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,./<>?";
+  let iterations = 0;
+  const maxIterations = 10;
+  
+  const interval = setInterval(() => {
+    element.innerText = finalText
+      .split("")
+      .map((char, index) => {
         if (index < iterations / (maxIterations / finalText.length)) {
           return finalText[index];
         }
@@ -893,7 +1381,6 @@ function startMission() {
     output.innerHTML += '<div class="holo-response">Mission declined. Standing by for further instructions.</div>';
   });
 }
-
 // 7. LIVE NODE MAP
 function showNodeMap() {
   // Create map container
@@ -1337,494 +1824,4 @@ window.addEventListener('load', function() {
   
   // Initialize the enhanced terminal
   initializeEnhancedTerminal();
-});// ------ CORE VARIABLES & FUNCTIONS ------
-const commandInput = document.getElementById('commandInput');
-const commandList = document.getElementById('commandList');
-const output = document.getElementById('mainOutput');
-const unlockMessage = document.getElementById('unlockMessage');
-const puzzleOverlay = document.getElementById('puzzleOverlay');
-const puzzleInput = document.getElementById('puzzleInput');
-const hackerNoise = document.getElementById('hackerNoise');
-
-let voiceUnlocked = false;
-let puzzlesSolved = 0;
-
-function startVoiceRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    document.getElementById('voiceFeedback').innerText = "Speech recognition not supported.";
-    return;
-  }
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript.toLowerCase();
-    console.log("🧠 VOICE RECOGNITION DEBUG:", transcript);
-    if (transcript.includes("we listen to silence")) {
-      document.getElementById('voiceFeedback').innerText = "Access granted.";
-      voiceUnlocked = true;
-      showHelp();
-      document.getElementById('startBtn').remove();
-      document.getElementById('clue').remove();
-    } else {
-      document.getElementById('voiceFeedback').innerText = "Access denied. Try again.";
-    }
-  };
-  recognition.start();
-}
-
-function showHelp() {
-  commandList.style.display = 'block';
-}
-
-function openPuzzle() {
-  puzzleOverlay.style.display = 'block';
-}
-
-function closePuzzle() {
-  puzzleOverlay.style.display = 'none';
-}
-
-// Original checkPuzzleSolution function (will be overridden by enhanced version)
-function checkPuzzleSolution() {
-  const answer = puzzleInput.value.trim().toLowerCase();
-  if (answer === 'redact' || answer === 'silence') {
-    output.innerHTML += `PUZZLE SOLVED: ${answer.toUpperCase()}<br>`;
-    puzzlesSolved++;
-    closePuzzle();
-    if (puzzlesSolved >= 2) {
-      unlockMessage.innerHTML = '> vox.protocol.init is now unlocked';
-    }
-  } else {
-    puzzleOverlay.querySelector('#puzzleOutput').innerHTML += '<br>Incorrect. Try again.';
-  }
-}
-
-function runFinalSequence() {
-  output.innerHTML = '';
-  let log = '';
-  let count = 0;
-  const lines = Array.from({ length: 30 }, (_, i) => `TRACE-${Math.random().toString(36).substring(2, 10).toUpperCase()}`);
-  const interval = setInterval(() => {
-    const code = lines[count];
-    log += `> ${code} .......... LINK STABILIZED<br>`;
-    output.innerHTML = log;
-    count++;
-    if (count >= lines.length) {
-      clearInterval(interval);
-      setTimeout(revealFinal, 1000);
-    }
-  }, 100);
-}
-
-function revealFinal() {
-  const audio = document.getElementById('dropSFX');
-  if (audio) audio.play();
-  document.getElementById('mainTerminal').style.display = 'none';
-  document.body.innerHTML += `
-    <div class="vox-id-card">
-      <div class="crt"></div>
-      <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
-      <div style="margin-top: 8px;">
-        <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
-        <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
-        <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
-        <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
-      </div>
-      <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
-        Transmission secured.<br>
-        Echo node authentication confirmed.
-      </div>
-    </div>
-  `;
-}
-
-// ------ ENHANCED TERMINAL FUNCTIONS ------
-
-// 1. NEON GRID GLOW FLICKER
-function addGridFlicker() {
-  // Create and add the flicker element
-  const flickerOverlay = document.createElement('div');
-  flickerOverlay.className = 'grid-flicker';
-  document.body.appendChild(flickerOverlay);
-  
-  // Start the random flickers
-  setInterval(() => {
-    if (Math.random() > 0.8) {
-      flickerOverlay.style.opacity = (Math.random() * 0.5).toString();
-      setTimeout(() => {
-        flickerOverlay.style.opacity = '0';
-      }, 100 + Math.random() * 200);
-    }
-  }, 2000);
-}
-
-// 2. TERMINAL BOOT SEQUENCE
-function runBootSequence() {
-  const terminal = document.getElementById('mainTerminal');
-  terminal.classList.add('booting');
-  
-  // Add boot text to the output
-  const bootMessages = [
-    '> SYSTEM INITIALIZATION',
-    '> LOADING VOX PROTOCOLS...',
-    '> ESTABLISHING SECURE CONNECTION',
-    '> SCANNING FOR ACTIVE NODES',
-    '> ACTIVATING TERMINAL INTERFACE'
-  ];
-  
-  let count = 0;
-  const bootInterval = setInterval(() => {
-    if (count < bootMessages.length) {
-      output.innerHTML += bootMessages[count] + '<br>';
-      playTypeSound();
-      count++;
-    } else {
-      clearInterval(bootInterval);
-      terminal.classList.remove('booting');
-      terminal.classList.add('boot-complete');
-      
-      // Show the initial prompt after boot
-      setTimeout(() => {
-        document.querySelector('.clue-text').style.opacity = '1';
-        document.getElementById('startBtn').style.opacity = '1';
-      }, 500);
-    }
-  }, 700);
-}
-
-// 3. HACKING ANIMATION WITH GLYPHS
-function simulateHacking(duration = 3000, callback = null) {
-  hackerNoise.style.display = 'block';
-  hackerNoise.innerHTML = '';
-  
-  const glyphs = "⌘⌥⎇⎋⌫⌦⌁⌄↵⏎⎮░▒▓█▓▒░◢◣◤◥■□●○◆◇▣▢▪▫●✱✲✳✴✵✶✷✸❖⨁⨂";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,./<>?";
-  const all = glyphs + characters;
-  let count = 0;
-  
-  const interval = setInterval(() => {
-    let line = '';
-    // Occasionally inject VOX related words
-    if (Math.random() < 0.2) {
-      const words = ["VOX", "SILENCE", "CIPHER", "NODE", "ECHO", "PROTOCOL", "SIGNAL", "TRACE", "REDACT"];
-      const word = words[Math.floor(Math.random() * words.length)];
-      const pos = Math.floor(Math.random() * 40);
-      
-      for (let i = 0; i < 60; i++) {
-        if (i >= pos && i < pos + word.length) {
-          line += word[i - pos];
-        } else {
-          line += all.charAt(Math.floor(Math.random() * all.length));
-        }
-      }
-    } else {
-      for (let i = 0; i < 60; i++) {
-        line += all.charAt(Math.floor(Math.random() * all.length));
-      }
-    }
-    
-    hackerNoise.innerHTML += `${line}<br>`;
-    hackerNoise.scrollTop = hackerNoise.scrollHeight;
-    
-    count++;
-    if (count > 20 || (duration && count > duration / 100)) {
-      clearInterval(interval);
-      setTimeout(() => {
-        hackerNoise.style.display = 'none';
-        if (callback) callback();
-      }, 500);
-    }
-  }, 100);
-}
-
-// 4. DATA PARTICLE CLOUD
-function initializeParticles() {
-  const particleContainer = document.createElement('div');
-  particleContainer.className = 'particle-container';
-  document.body.appendChild(particleContainer);
-  
-  // Create particles
-  for (let i = 0; i < 50; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'data-particle';
-    
-    // Random initial position
-    particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.top = Math.random() * 100 + 'vh';
-    
-    // Random size
-    const size = 2 + Math.random() * 4;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-    
-    // Random animation duration
-    const duration = 10 + Math.random() * 20;
-    particle.style.animationDuration = duration + 's';
-    
-    // Random delay
-    particle.style.animationDelay = Math.random() * 10 + 's';
-    
-    particleContainer.appendChild(particle);
-  }
-}
-
-// 5. SCANNER LINE EFFECT
-function activateScannerLine() {
-  const scanner = document.querySelector('.scanner-line');
-  scanner.style.display = 'block';
-  
-  setTimeout(() => {
-    scanner.style.top = '100%';
-    
-    // Hide after scan completes
-    setTimeout(() => {
-      scanner.style.display = 'none';
-      scanner.style.top = '0';
-    }, 2000);
-  }, 100);
-}
-
-// 6. PULSE EFFECT FOR SUCCESS
-function createSuccessPulse(element) {
-  const pulseElement = document.createElement('div');
-  pulseElement.className = 'success-pulse';
-  
-  // Position relative to element
-  const rect = element.getBoundingClientRect();
-  pulseElement.style.left = (rect.left + rect.width / 2) + 'px';
-  pulseElement.style.top = (rect.top + rect.height / 2) + 'px';
-  
-  document.body.appendChild(pulseElement);
-  
-  // Remove after animation
-  setTimeout(() => {
-    pulseElement.remove();
-  }, 2000);
-}
-
-// 7. NETWORK NODE VISUALIZATION
-function visualizeNetworkConnection(callback) {
-  const canvas = document.createElement('canvas');
-  canvas.className = 'network-canvas';
-  canvas.width = 400;
-  canvas.height = 200;
-  
-  output.appendChild(canvas);
-  
-  const ctx = canvas.getContext('2d');
-  const nodes = [];
-  
-  // Create nodes
-  for (let i = 0; i < 8; i++) {
-    nodes.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: 4 + Math.random() * 4,
-      connected: false
-    });
-  }
-  
-  // Target node (VOX node)
-  const targetNode = {
-    x: canvas.width * 0.8,
-    y: canvas.height * 0.5,
-    size: 8,
-    connected: false
-  };
-  nodes.push(targetNode);
-  
-  let frameCount = 0;
-  
-  const animate = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw background grid
-    ctx.strokeStyle = 'rgba(0, 255, 0, 0.1)';
-    ctx.lineWidth = 0.5;
-    
-    for (let i = 0; i < canvas.width; i += 20) {
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, canvas.height);
-      ctx.stroke();
-    }
-    
-    for (let i = 0; i < canvas.height; i += 20) {
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(canvas.width, i);
-      ctx.stroke();
-    }
-    
-    // Draw connections
-    ctx.strokeStyle = '#0f0';
-    ctx.lineWidth = 1;
-    
-    for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].connected) {
-        ctx.beginPath();
-        ctx.moveTo(nodes[0].x, nodes[0].y);
-        ctx.lineTo(nodes[i].x, nodes[i].y);
-        ctx.stroke();
-      }
-    }
-    
-    // Draw nodes
-    for (let i = 0; i < nodes.length; i++) {
-      ctx.fillStyle = i === nodes.length - 1 ? '#ff0' : '#0f0';
-      ctx.beginPath();
-      ctx.arc(nodes[i].x, nodes[i].y, nodes[i].size, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add pulse effect to target node
-      if (i === nodes.length - 1) {
-        ctx.strokeStyle = 'rgba(255, 255, 0, ' + (0.5 + Math.sin(frameCount * 0.1) * 0.5) + ')';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(nodes[i].x, nodes[i].y, nodes[i].size + 5 + Math.sin(frameCount * 0.1) * 3, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-    }
-    
-    // Connect nodes gradually
-    if (frameCount % 15 === 0 && frameCount < nodes.length * 15) {
-      const nodeIndex = Math.floor(frameCount / 15);
-      if (nodeIndex < nodes.length) {
-        nodes[nodeIndex].connected = true;
-        playNodeConnectSound();
-      }
-    }
-    
-    frameCount++;
-    
-    // Check if completed
-    if (frameCount < 200) {
-      requestAnimationFrame(animate);
-    } else {
-      // Draw final "connected" state
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      if (callback) callback();
-    }
-  };
-  
-  animate();
-}
-
-// 8. SHOW HIDDEN MESSAGE (that requires highlighting)
-function addHiddenMessage() {
-  const hiddenDiv = document.createElement('div');
-  hiddenDiv.textContent = "THE SILENT ONES ARE WATCHING";
-  hiddenDiv.className = 'hidden-message';
-  
-  output.appendChild(hiddenDiv);
-  output.innerHTML += '<br><small style="color: #555">[Select text above to reveal hidden message]</small><br>';
-}
-
-// 9. TYPE WRITER EFFECT FOR RESPONSES
-function typeWriterEffect(element, text, speed = 30, callback = null) {
-  let i = 0;
-  element.innerHTML = '';
-  
-  function type() {
-    if (i < text.length) {
-      element.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(type, speed);
-    } else if (callback) {
-      callback();
-    }
-  }
-  
-  type();
-}
-
-// 10. COUNTDOWN TIMER EFFECT
-function addCountdownTimer(seconds, onComplete = null) {
-  const timerElement = document.createElement('div');
-  timerElement.className = 'countdown-timer';
-  timerElement.textContent = `SECURITY LOCKDOWN IN: ${seconds} SECONDS`;
-  
-  document.getElementById('mainTerminal').appendChild(timerElement);
-  
-  let timeLeft = seconds;
-  
-  const timerInterval = setInterval(() => {
-    timeLeft--;
-    timerElement.textContent = `SECURITY LOCKDOWN IN: ${timeLeft} SECONDS`;
-    
-    if (timeLeft <= 10) {
-      timerElement.classList.add('critical');
-    }
-    
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      timerElement.textContent = 'LOCKDOWN INITIATED';
-      
-      if (onComplete) {
-        onComplete();
-      }
-    }
-  }, 1000);
-  
-  // Return a function to cancel the timer
-  return function cancelTimer() {
-    clearInterval(timerInterval);
-    timerElement.textContent = 'SECURITY OVERRIDE SUCCESSFUL';
-    timerElement.className = 'countdown-timer success';
-  };
-}
-
-// 11. SOUND EFFECTS
-// Add these to your existing JS
-function playTypeSound() {
-  // Simple keyboard click sound
-  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_270f8ad054.mp3?filename=keyboard-typing-102351.mp3');
-  audio.volume = 0.2;
-  audio.play();
-}
-
-function playErrorSound() {
-  const audio = new Audio('https://cdn.pixabay.com/download/audio/2021/08/04/audio_749a8ec0fd.mp3?filename=incorrect-buzz-1-131657.mp3');
-  audio.volume = 0.3;
-  audio.play();
-}
-
-function playSuccessSound() {
-  const audio = new Audio('https://cdn.pixabay.com/download/audio/2021/08/09/audio_12b0c19614.mp3?filename=success-1-6297.mp3');
-  audio.play();
-}
-
-function playNodeConnectSound() {
-  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_3324a21ffe.mp3?filename=ping-1-141270.mp3');
-  audio.volume = 0.1;
-  audio.play();
-}
-
-function playAlarmSound() {
-  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_add7c36093.mp3?filename=alarm-clock-short-6402.mp3');
-  audio.loop = true;
-  audio.play();
-  
-  return function stopAlarm() {
-    audio.pause();
-    audio.loop = false;
-  };
-}
-
-// 12. DECRYPT TEXT ANIMATION
-function decryptTextEffect(element, finalText, duration = 2000) {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,./<>?";
-  let iterations = 0;
-  const maxIterations = 10;
-  
-  const interval = setInterval(() => {
-    element.innerText = finalText
-      .split("")
-      .map((char, index) => {
-        if (index < iterations / (maxIterations / finalText.length)) {
+});
