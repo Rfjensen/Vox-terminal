@@ -88,37 +88,78 @@
     .blinking {
       animation: blink 1s step-start infinite;
     }
-    @keyframes blink {
-      50% { opacity: 0; }
+    .vox-id-card {
+      border: 2px solid #0f0;
+      padding: 16px;
+      margin-top: 20px;
+      max-width: 320px;
+      background: rgba(0, 0, 0, 0.85);
+      font-family: 'Share Tech Mono', monospace;
+      animation: dropIn 0.8s ease-out forwards, pulseGlow 2s infinite ease-in-out;
+      position: relative;
     }
+    
     @keyframes dropIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-30px) scale(0.95);
+      0% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 12px #0f0; }
+      50% { box-shadow: 0 0 20px #0f0, 0 0 40px #0f0; }
     }
-}
-
-.vox-id-card {
-  border: 2px solid #0f0;
-  padding: 16px;
-  margin-top: 20px;
-  max-width: 320px;
-  background: rgba(0,0,0,0.8);
-  font-family: 'Share Tech Mono', monospace;
-  animation: dropIn 0.8s ease-out forwards;
-}
+    
+    .crt {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 0, 0.03),
+        rgba(0, 255, 0, 0.03) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      animation: flicker 0.15s infinite;
+    }
+    
+    @keyframes flicker {
+      0% { opacity: 0.95; }
+      50% { opacity: 1; }
+      100% { opacity: 0.9; }
+    }
+    
+    }
+    
+    .vox-id-card {
+      border: 2px solid #0f0;
+      padding: 16px;
+      margin-top: 20px;
+      max-width: 320px;
+      background: rgba(0,0,0,0.8);
+      font-family: 'Share Tech Mono', monospace;
+      animation: dropIn 0.8s ease-out forwards;
+    }
 
   </style>
 </head>
 <body>
+  <audio id="dropSFX" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_90040b8425.mp3?filename=ui-confirmation-alert-1-130447.mp3" preload="auto"></audio>
   <div class="terminal" id="mainTerminal">
     <div class="terminal-header">> VOX RECRUITMENT TERMINAL</div>
     <div class="clue-text">"Speak the phrase hidden in this domain."</div>
-    <button onclick="startVoiceRecognition()">Start Voice Recognition</button>
+    <button onclick="startVoiceRecognition()" style="background: none; border: 2px solid #0f0; padding: 10px 20px; color: #0f0; font-family: 'Share Tech Mono', monospace; cursor: pointer;">
+      >> INITIATE VOICE TRACE
+    </button>
     <div id="voiceFeedback"></div>
     <div id="mainOutput"></div>
     <div class="command-list" id="commandList" style="display:none;">
@@ -276,24 +317,29 @@
     }
 
     function revealFinal() {
-       hackerNoise.innerHTML += `
-      <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
-      Meet Cipher-9 in Ember Row beneath the mural with no name.
-      <br><br>
-      <div class="vox-id-card">
-        <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
-        <div style="margin-top: 8px;">
-          <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
-          <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
-          <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
-          <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
+      const audio = document.getElementById('dropSFX');
+      if (audio) audio.play();
+    
+      const hackerNoise = document.getElementById('hackerNoise');
+      hackerNoise.innerHTML += `
+        <br><br><strong>FINAL PROTOCOL RECEIVED</strong><br>
+        Meet Cipher-9 in Ember Row beneath the mural with no name.
+        <br><br>
+        <div class="vox-id-card">
+          <div class="crt"></div>
+          <div style="font-weight: bold; color: #0f0;">:: VOX IDENT CARD ::</div>
+          <div style="margin-top: 8px;">
+            <span style="color:#999;">Designation:</span> <span style="color:#0f0;">Cipher-9</span><br>
+            <span style="color:#999;">Rank:</span> <span style="color:#0f0;">Initiate Node</span><br>
+            <span style="color:#999;">Status:</span> <span style="color:#0f0;">Activated</span><br>
+            <span style="color:#999;">ID Code:</span> <span style="color:#0f0;">VX-███-93X</span>
+          </div>
+          <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
+            Transmission secured.<br>
+            Echo node authentication confirmed.
+          </div>
         </div>
-        <div style="margin-top: 12px; font-size: 0.75rem; color:#999;">
-          Transmission secured.<br>
-          Echo node authentication confirmed.
-        </div>
-      </div>
-    `;
+      `;
     }
   </script>
 </body>
