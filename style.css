@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 body {
   margin: 0;
@@ -78,4 +77,1167 @@ body {
   line-height: 1.3;
   max-height: 300px;
   overflow-y: auto;
+}
+
+/* ENHANCED TERMINAL STYLES */
+
+/* 1. ANIMATED BACKGROUND */
+.background-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 40, 0, 0.4) 0%, rgba(0, 0, 0, 0.95) 70%);
+  z-index: -2;
+  animation: pulse-glow 8s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* 2. GRID FLICKER EFFECT */
+.grid-flicker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#0f0 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* 3. PARTICLE LAYER */
+.particle-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.data-particle {
+  position: absolute;
+  background-color: rgba(0, 255, 0, 0.6);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-particle 20s linear infinite;
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(100px, -100px);
+    opacity: 0;
+  }
+}
+
+/* 4. SCANNER LINE */
+.scanner-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent 0%, #0f0 50%, transparent 100%);
+  box-shadow: 0 0 10px #0f0;
+  z-index: 100;
+  display: none;
+  pointer-events: none;
+  transition: top 2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* 5. CRT SCREEN EFFECT */
+.terminal {
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 0, 0.03),
+    rgba(0, 255, 0, 0.03) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: scan-lines 8s linear infinite;
+}
+
+@keyframes scan-lines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* 6. TERMINAL BOOT SEQUENCE */
+.terminal.booting {
+  animation: glitch-in 1s ease-out;
+}
+
+@keyframes glitch-in {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  20% {
+    clip-path: inset(0 0 60% 0);
+    transform: translateX(10px);
+    opacity: 0.5;
+  }
+  40% {
+    clip-path: inset(0 0 20% 0);
+    transform: translateX(-5px);
+  }
+  60% {
+    clip-path: inset(0 0 10% 0);
+    transform: translateX(5px);
+  }
+  80% {
+    clip-path: inset(0 0 5% 0);
+    transform: translateX(-2px);
+  }
+  100% {
+    clip-path: inset(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.boot-complete .terminal-header {
+  text-shadow: 0 0 10px #0f0;
+}
+
+/* 7. ENHANCED TEXT ANIMATIONS */
+.clue-text, #startBtn {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.status-output {
+  white-space: pre;
+  line-height: 1.5;
+}
+
+.trace-log-output {
+  font-family: 'Share Tech Mono', monospace;
+  color: #0f0;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #0f0;
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;
+  display: none;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  z-index: 100;
+}
+
+/* 8. OUTPUT LOG STYLING */
+.output-log {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
+}
+
+/* 9. COMMAND ECHO TYPING EFFECT */
+.echo-text {
+  color: #0f0;
+  opacity: 0.6;
+  text-shadow: 0 0 5px #0f0;
+  animation: echo-fade 2s forwards;
+}
+
+@keyframes echo-fade {
+  0% { opacity: 0.8; text-shadow: 0 0 8px #0f0; }
+  100% { opacity: 0.4; text-shadow: 0 0 2px #0f0; }
+}
+
+/* 10. SUCCESS PULSE EFFECT */
+.success-pulse {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #0f0;
+  z-index: 100;
+  pointer-events: none;
+  animation: pulse-out 2s ease-out forwards;
+}
+
+@keyframes pulse-out {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(50);
+    opacity: 0;
+    box-shadow: 0 0 0 30px rgba(0, 255, 0, 0);
+  }
+}
+
+/* 11. NETWORK CANVAS */
+.network-canvas {
+  display: block;
+  margin: 10px auto;
+  border: 1px solid #0f0;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* 12. HIDDEN MESSAGE */
+.hidden-message {
+  background-color: #000;
+  color: #030;
+  padding: 5px 10px;
+  border: 1px solid #020;
+  margin-top: 10px;
+  user-select: text;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.hidden-message:hover,
+.hidden-message:active,
+.hidden-message::selection {
+  color: #0f0;
+  background-color: #010;
+}
+
+/* 13. COUNTDOWN TIMER */
+.countdown-timer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #0f0;
+  padding: 5px 10px;
+  border: 1px solid #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: bold;
+}
+
+.countdown-timer.critical {
+  color: #f00;
+  border-color: #f00;
+  animation: blink 0.5s infinite alternate;
+}
+
+.countdown-timer.success {
+  color: #0f0;
+  border-color: #0f0;
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* 14. VOX LOG STYLING */
+.vox-log {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #0f0;
+  padding: 10px;
+  margin: 10px 0;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.vox-log .log-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.vox-log .log-content {
+  color: #bbb;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.vox-log .log-signature {
+  color: #666;
+  font-style: italic;
+  text-align: right;
+}
+
+/* 15. ENHANCED BUTTON STYLING */
+.button-terminal {
+  background: none;
+  border: 2px solid #0f0;
+  padding: 10px 20px;
+  color: #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.button-terminal:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 10px #0f0;
+}
+
+.button-terminal:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.2),
+    transparent
+  );
+  animation: button-shine 1.5s infinite;
+}
+
+@keyframes button-shine {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+/* 16. IMPROVED TERMINAL OVERLAY */
+.terminal-overlay {
+  animation: overlay-appear 0.5s ease-out;
+  box-shadow: 0 0 20px #0f0;
+}
+
+@keyframes overlay-appear {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 17. ID CARD ENHANCEMENTS */
+.vox-id-card {
+  border: 2px solid #0f0;
+  padding: 16px;
+  margin: 20px auto;
+  max-width: 320px;
+  background: rgba(0, 0, 0, 0.85);
+  font-family: 'Share Tech Mono', monospace;
+  animation: dropIn 0.8s ease-out forwards, pulseGlow 2s infinite ease-in-out;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+}
+
+.crt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 0, 0.03),
+    rgba(0, 255, 0, 0.03) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
+  }
+  70% {
+    transform: translateY(10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); }
+  50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.8); }
+}
+
+@keyframes flicker {
+  0% { opacity: 0.95; }
+  5% { opacity: 0.85; }
+  10% { opacity: 0.95; }
+  15% { opacity: 1; }
+  50% { opacity: 0.98; }
+  80% { opacity: 0.90; }
+  100% { opacity: 0.95; }
+}
+
+/* 18. HOLOGRAPHIC COMMAND RESPONSE */
+.holo-response {
+  position: relative;
+  padding: 5px;
+  background-color: rgba(0, 20, 0, 0.3);
+  border-left: 2px solid #0f0;
+  margin: 5px 0;
+  animation: holo-appear 1s ease-out;
+}
+
+@keyframes holo-appear {
+  0% {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateX(-10px);
+  }
+  50% {
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+  }
+}
+
+/* 19. BLINKING CURSOR EFFECT */
+#commandInput {
+  position: relative;
+}
+
+#commandInput::after {
+  content: '|';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0f0;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* 20. ENHANCED IMAGE BACKGROUNDS */
+body {
+  background-image: 
+    radial-gradient(#0f0 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(0, 20, 0, 0.1) 0%, rgba(0, 0, 0, 0.95) 70%);
+  background-size: 20px 20px, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* ADVANCED VOX TERMINAL STYLES */
+
+/* 1. INTRO SEQUENCE STYLES */
+.intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-terminal {
+  width: 90%;
+  max-width: 800px;
+  color: #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  border: 1px solid #0f0;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.intro-line {
+  line-height: 1.6;
+  margin-bottom: 5px;
+}
+
+.intro-logo {
+  margin-top: 20px;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  text-align: center;
+  white-space: pre;
+}
+
+.logo-v, .logo-o, .logo-x {
+  display: inline-block;
+  opacity: 0;
+  animation: fade-in 0.5s forwards;
+}
+
+.logo-v { animation-delay: 0.1s; color: #0f0; }
+.logo-o { animation-delay: 0.3s; color: #0f0; }
+.logo-x { animation-delay: 0.5s; color: #0f0; }
+
+.logo-line {
+  display: inline-block;
+  opacity: 0;
+  animation: fade-in 0.3s forwards;
+  animation-delay: 0.7s;
+  color: rgba(0, 255, 0, 0.7);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.terminal-reveal {
+  animation: reveal 1s ease-out forwards;
+}
+
+@keyframes reveal {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 2. CIPHER WHEEL PUZZLE */
+.cipher-overlay {
+  width: 600px !important;
+  height: 400px !important;
+}
+
+.cipher-puzzle {
+  text-align: center;
+}
+
+.cipher-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.cipher-message {
+  font-size: 1.2rem;
+  margin: 20px 0;
+  letter-spacing: 2px;
+  color: #0f0;
+}
+
+.cipher-wheel {
+  margin: 20px auto;
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.wheel-outer, .wheel-inner {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.wheel-outer {
+  background-color: rgba(0, 20, 0, 0.8);
+  border: 1px solid #0f0;
+}
+
+.wheel-inner {
+  width: 150px;
+  height: 150px;
+  background-color: rgba(0, 40, 0, 0.8);
+  border: 1px dashed #0f0;
+}
+
+@keyframes rotate-wheel {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 3. PASSWORD CRACKER STYLES */
+.password-cracker {
+  background-color: rgba(0, 20, 0, 0.5);
+  padding: 15px;
+  border: 1px solid #0f0;
+  margin-bottom: 20px;
+}
+
+.cracker-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.password-display {
+  margin: 15px 0;
+  font-size: 1.2rem;
+  letter-spacing: 5px;
+}
+
+.error-message {
+  color: #f00;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #0f0;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.warning-message {
+  color: #ff0;
+  margin-top: 10px;
+}
+
+/* 4. MEMORY PATTERN GAME */
+.memory-game {
+  text-align: center;
+}
+
+.memory-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.pattern-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.pattern-square {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pattern-square[data-color="red"] {
+  background-color: rgba(150, 0, 0, 0.3);
+}
+
+.pattern-square[data-color="green"] {
+  background-color: rgba(0, 150, 0, 0.3);
+}
+
+.pattern-square[data-color="blue"] {
+  background-color: rgba(0, 0, 150, 0.3);
+}
+
+.pattern-square[data-color="yellow"] {
+  background-color: rgba(150, 150, 0, 0.3);
+}
+
+.pattern-square.active[data-color="red"] {
+  background-color: rgba(255, 0, 0, 0.8);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  transform: scale(1.1);
+}
+
+.pattern-square.active[data-color="green"] {
+  background-color: rgba(0, 255, 0, 0.8);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  transform: scale(1.1);
+}
+
+.pattern-square.active[data-color="blue"] {
+  background-color: rgba(0, 0, 255, 0.8);
+  box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.pattern-square.active[data-color="yellow"] {
+  background-color: rgba(255, 255, 0, 0.8);
+  box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+  transform: scale(1.1);
+}
+
+.player-sequence {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 20px;
+  height: 20px;
+  border: 1px solid #0f0;
+  padding: 5px;
+  min-width: 200px;
+}
+
+.sequence-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.status-message {
+  margin: 10px 0;
+  color: #0f0;
+}
+
+/* 5. NODE MAP STYLES */
+.node-map-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 500px;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  animation: map-appear 0.5s ease-out;
+}
+
+.map-closing {
+  animation: map-close 0.5s ease-in forwards;
+}
+
+@keyframes map-appear {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes map-close {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #0f0;
+  font-weight: bold;
+}
+
+.close-map {
+  background: none;
+  border: none;
+  color: #0f0;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.map-status {
+  margin-top: 10px;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.status-text {
+  color: #0f0;
+}
+
+/* 6. MISSION STYLES */
+.mission-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fade-in 0.5s ease-out;
+}
+
+.mission-container {
+  width: 90%;
+  max-width: 600px;
+  background-color: rgba(0, 20, 0, 0.9);
+  border: 2px solid #0f0;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+.mission-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #0f0;
+  padding-bottom: 8px;
+}
+
+.mission-briefing {
+  color: #ddd;
+  line-height: 1.5;
+  background-color: rgba(0, 20, 0, 0.5);
+  padding: 15px;
+  border-left: 2px solid #0f0;
+  margin-bottom: 20px;
+}
+
+.mission-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* 7. GLITCH EFFECTS */
+.glitch {
+  animation: glitch-animation 0.2s linear;
+}
+
+@keyframes glitch-animation {
+  0% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: translate(-3px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(3px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(3px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(-3px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.glitch-effect {
+  animation: glitch-effect 0.3s forwards;
+}
+
+@keyframes glitch-effect {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.subliminal-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #f00;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Share Tech Mono', monospace;
+  opacity: 0.7;
+  z-index: 1000;
+  text-shadow: 0 0 10px #f00;
+  pointer-events: none;
+}
+
+/* 8. ENHANCED FINAL SEQUENCE */
+.final-sequence-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fade-in 0.5s ease-out;
+}
+
+.final-sequence-terminal {
+  width: 90%;
+  max-width: 800px;
+  height: 80vh;
+  background-color: rgba(0, 10, 0, 0.9);
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+  padding: 20px;
+  overflow-y: auto;
+  font-family: 'Share Tech Mono', monospace;
+  color: #0f0;
+}
+
+.trace-line {
+  line-height: 1.5;
+  margin-bottom: 5px;
+  animation: trace-line-appear 0.3s ease-out;
+}
+
+@keyframes trace-line-appear {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  animation: glitch-transition 1s forwards;
+}
+
+@keyframes glitch-transition {
+  0% { 
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  10% {
+    opacity: 1;
+    background-color: rgba(0, 255, 0, 0.3);
+  }
+  20% {
+    background-color: rgba(255, 0, 0, 0.3);
+  }
+  30% {
+    background-color: rgba(0, 0, 255, 0.3);
+  }
+  40% {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  60% {
+    background-color: rgba(0, 255, 0, 0.2);
+  }
+  80% {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  100% {
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+/* 9. ENHANCED ID CARD */
+.vox-id-card.enhanced {
+  position: relative;
+  width: 350px;
+  background: linear-gradient(145deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.98));
+  padding: 30px;
+  border: 2px solid #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  color: #0f0;
+  box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
+  overflow: hidden;
+}
+
+.card-header {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #0f0;
+  padding-bottom: 10px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+.card-content {
+  margin-bottom: 20px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-label {
+  color: #888;
+  flex: 1;
+}
+
+.card-value {
+  color: #0f0;
+  flex: 1;
+  text-align: right;
+  font-weight: bold;
+}
+
+.card-footer {
+  font-size: 0.8rem;
+  color: #666;
+  border-top: 1px solid #0f0;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.card-chip {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(45deg, #0f0, #020);
+  border: 1px solid #0a0;
+  clip-path: polygon(0 25%, 50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%);
+}
+
+.card-watermark {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 4rem;
+  color: rgba(0, 255, 0, 0.05);
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.timestamp {
+  margin-top: 10px;
+  color: #444;
+  font-size: 0.7rem;
+}
+
+.vox-id-card.enhanced:hover {
+  box-shadow: 0 0 60px rgba(0, 255, 0, 0.7);
+}
+
+.vox-id-card.reveal-secret {
+  animation: reveal-secret 1s forwards;
+}
+
+@keyframes reveal-secret {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
+}
+
+.secret-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 2px solid #f00;
+  padding: 20px;
+  color: #f00;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.2rem;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+  z-index: 3000;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+}
+
+/* 10. SEQUENCE PUZZLE STYLES */
+.sequence-puzzle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sequence-display {
+  font-size: 1.4rem;
+  margin: 20px 0;
+  font-weight: bold;
+  color: #0f0;
+  letter-spacing: 2px;
+}
+
+.hint-text {
+  background-color: rgba(0, 20, 0, 0.5);
+  padding: 10px;
+  margin-top: 10px;
+  border-left: 2px solid #ff0;
+  color: #ff0;
+}
+
+/* 11. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .node-map-container {
+    width: 95%;
+    height: auto;
+  }
+  
+  #nodeMapCanvas {
+    width: 100%;
+    height: 300px;
+  }
+  
+  .cipher-overlay {
+    width: 95% !important;
+    height: auto !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .pattern-container {
+    flex-wrap: wrap;
+  }
+  
+  .vox-id-card.enhanced {
+    width: 90%;
+    max-width: 350px;
+  }
 }
