@@ -160,27 +160,13 @@ function runBootSequence() {
   let count = 0;
   const bootInterval = setInterval(() => {
     if (count < bootMessages.length) {
-      onst messageElement = document.createElement('div');
-      messageElement.textContent = bootMessages[count];
-      output.appendChild(messageElement);
-      
-      // Scroll to bottom
-      output.scrollTop = output.scrollHeight;
+      output.innerHTML += bootMessages[count] + '<br>';
       playTypeSound();
       count++;
     } else {
       clearInterval(bootInterval);
       terminal.classList.remove('booting');
       terminal.classList.add('boot-complete');
-
-      // Add the help instruction
-      const helpInstruction = document.createElement('div');
-      helpInstruction.innerHTML = '<br>> TERMINAL READY. TYPE "help" FOR AVAILABLE COMMANDS.<br>';
-      helpInstruction.style.color = '#0f0';
-      output.appendChild(helpInstruction);
-      
-      // Scroll to bottom
-      output.scrollTop = output.scrollHeight;
       
       // Show the initial prompt after boot
       setTimeout(() => {
@@ -667,52 +653,27 @@ function displayRandomLog() {
 
 // 15. MODIFIED CORE FUNCTIONS
 
+// Enhanced runCommand with animations
 function enhancedRunCommand(cmd) {
   if (!voiceUnlocked) {
-    // Create a new response element
-    const responseElement = document.createElement('div');
-    responseElement.innerHTML = `> ${cmd}<br>ACCESS DENIED<br>`;
-    output.appendChild(responseElement);
-    
+    output.innerHTML += `> ${cmd}<br>ACCESS DENIED<br>`;
     playErrorSound();
     return;
   }
 
-  // Create a new command element
-  const commandElement = document.createElement('div');
-  commandElement.innerHTML = `> ${cmd}`;
-  output.appendChild(commandElement);
-  
+  output.innerHTML += `> ${cmd}<br>`;
   playTypeSound();
 
   switch(cmd) {
     case 'help':
-      // Show help directly in the output instead of a separate commandList element
-      const helpElement = document.createElement('div');
-      helpElement.innerHTML = `
-      > Available Commands:
-        - trace               ............ locate active node
-        - vox.status          ............ check diagnostics
-        - decrypt node        ............ solve cipher
-        - access.redacted     ............ decrypt VOX log
-        - vox.logs            ............ access VOX archives
-        - node.map            ............ display network map
-        - mission.request     ............ request VOX mission
-        - vox.protocol.init   ............ [locked]
-      `;
-      output.appendChild(helpElement);
+      showHelp();
       break;
       
     case 'trace':
       simulateHacking(2000, () => {
-        const responseElement = document.createElement('div');
-        responseElement.innerHTML = 'NODE TRACE: SIGIL-1134 ACTIVE<br>';
-        output.appendChild(responseElement);
-        
+        output.innerHTML += 'NODE TRACE: SIGIL-1134 ACTIVE<br>';
         visualizeNetworkConnection(() => {
-          const connectionElement = document.createElement('div');
-          connectionElement.innerHTML = 'NODE CONNECTION ESTABLISHED<br>';
-          output.appendChild(connectionElement);
+          output.innerHTML += 'NODE CONNECTION ESTABLISHED<br>';
         });
       });
       break;
@@ -735,9 +696,7 @@ function enhancedRunCommand(cmd) {
     case 'access.redacted':
       const stopAlarm = playAlarmSound();
       const cancelTimer = addCountdownTimer(60, () => {
-        const lockdownElement = document.createElement('div');
-        lockdownElement.innerHTML = 'SECURITY LOCKDOWN INITIATED. TERMINAL ACCESS REVOKED.<br>';
-        output.appendChild(lockdownElement);
+        output.innerHTML += 'SECURITY LOCKDOWN INITIATED. TERMINAL ACCESS REVOKED.<br>';
         commandInput.disabled = true;
       });
       
@@ -761,23 +720,13 @@ function enhancedRunCommand(cmd) {
       }
       break;
       
-    case 'node.map':
-      showNodeMap();
-      break;
-      
-    case 'mission.request':
-      startMission();
-      break;
-      
     case 'vox.protocol.init':
       if (puzzlesSolved >= 2) {
         playSuccessSound();
         runFinalSequence();
       } else {
         playErrorSound();
-        const lockedElement = document.createElement('div');
-        lockedElement.innerHTML = 'Command Locked. Solve required puzzles.<br>';
-        output.appendChild(lockedElement);
+        output.innerHTML += 'Command Locked. Solve required puzzles.<br>';
       }
       break;
       
@@ -785,18 +734,11 @@ function enhancedRunCommand(cmd) {
       if (cmd.startsWith('echo ')) {
         // Easter egg - repeat what the user says with echo effect
         const message = cmd.substring(5);
-        const echoElement = document.createElement('div');
-        echoElement.innerHTML = `<span class="echo-text">${message}</span><br>`;
-        output.appendChild(echoElement);
+        output.innerHTML += `<span class="echo-text">${message}</span><br>`;
       } else {
-        const unknownElement = document.createElement('div');
-        unknownElement.innerHTML = 'Unknown command. Type "help" for available commands.<br>';
-        output.appendChild(unknownElement);
+        output.innerHTML += 'Unknown command. Type "help".<br>';
       }
   }
-  
-  // Scroll to the bottom after adding content
-  output.scrollTop = output.scrollHeight;
 }
 
 // Initialize everything
