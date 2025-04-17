@@ -160,7 +160,7 @@ function runBootSequence() {
   let count = 0;
   const bootInterval = setInterval(() => {
     if (count < bootMessages.length) {
-      onst messageElement = document.createElement('div');
+      const messageElement = document.createElement('div');
       messageElement.textContent = bootMessages[count];
       output.appendChild(messageElement);
       
