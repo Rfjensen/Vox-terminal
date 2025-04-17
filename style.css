@@ -54,7 +54,10 @@ body {
   padding: 8px;
 }
 .command-list {
- display: none;
+  white-space: pre;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.5;
+  margin-top: 10px;
 }
 .clue-text {
   font-style: italic;
@@ -263,18 +266,12 @@ body {
 
 /* 8. OUTPUT LOG STYLING */
 .output-log {
-  height: calc(100% - 100px); /* Adjust based on your layout */
+  max-height: 300px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 20px;
+  padding-right: 10px;
   font-family: 'Share Tech Mono', monospace;
-  line-height: 1.5;
-  position: relative;
-}
-
-.output-log > div {
-  margin-bottom: 5px;
-  animation: fade-in 0.3s ease-out;
+  line-height: 1.4;
 }
 
 /* 9. COMMAND ECHO TYPING EFFECT */
