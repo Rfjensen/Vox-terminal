@@ -1296,35 +1296,35 @@ function runImmersiveIntro() {
   }
   
   function completeIntro() {
-    // Add logo animation
-    const logo = document.createElement('pre');
-    logo.className = 'intro-logo';
-    logo.innerHTML = `
-    <span class="logo-v">__      __</span>
-    <span class="logo-o"> \\ \\    / /</span>
-    <span class="logo-x">  \\ \\  / / </span>
-    <span class="logo-line">   \\ \\/ /  </span>
-    <span class="logo-line">    \\  /   </span>
-    <span class="logo-line">    / /\\   </span>
-    <span class="logo-line">   / /\\ \\  </span>
-    <span class="logo-x">  / /  \\ \\ </span>
-    <span class="logo-o"> /_/    \\_\\</span>
-    `;
+  // Add logo animation with VOX instead of just X
+  const logo = document.createElement('pre');
+  logo.className = 'intro-logo';
+  logo.innerHTML = `
+    <span class="logo-v">__     ___    __      __</span>
+    <span class="logo-o">\\ \\   / / |   \\ \\    / /</span>
+    <span class="logo-x"> \\ \\ / /| |    \\ \\  / / </span>
+    <span class="logo-line">  \\ V / | |     \\ \\/ /  </span>
+    <span class="logo-line">   \\ /  | |___   \\  /   </span>
+    <span class="logo-line">   | |  |_____|  / /\\   </span>
+    <span class="logo-line">   | |          / /\\ \\  </span>
+    <span class="logo-x">   | |         / /  \\ \\ </span>
+    <span class="logo-o">   |_|        /_/    \\_\\</span>
+  `;
+  
+  introTerminal.appendChild(logo);
+  
+  // Fade out intro and reveal main terminal
+  setTimeout(() => {
+    introOverlay.style.animation = 'fade-out 1.5s forwards';
+    document.getElementById('mainTerminal').style.opacity = '1';
+    document.getElementById('mainTerminal').classList.add('terminal-reveal');
     
-    introTerminal.appendChild(logo);
-    
-    // Fade out intro and reveal main terminal
+    // Remove intro elements after animation
     setTimeout(() => {
-      introOverlay.style.animation = 'fade-out 1.5s forwards';
-      document.getElementById('mainTerminal').style.opacity = '1';
-      document.getElementById('mainTerminal').classList.add('terminal-reveal');
-      
-      // Remove intro elements after animation
-      setTimeout(() => {
-        introOverlay.remove();
-      }, 1500);
-    }, 2000);
-  }
+      introOverlay.remove();
+    }, 1500);
+  }, 2000);
+}
   
   // Start the intro sequence
   setTimeout(typeNextLine, 1000);
