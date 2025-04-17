@@ -1286,11 +1286,11 @@ function runImmersiveIntro() {
         }
         
         // Faster typing speed - reduced from 30-80ms to 10-25ms per character
-        setTimeout(typeChar, 5 + Math.random() * 8);
+        setTimeout(typeChar, 5 + Math.random() * 4);
       } else {
         lineIndex++;
         // Reduced delay between lines from 500ms to 200ms
-        setTimeout(typeNextLine, 100);
+        setTimeout(typeNextLine, 25);
       }
     }
     
