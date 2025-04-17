@@ -1285,10 +1285,10 @@ function runImmersiveIntro() {
           playTypeSound();
         }
         
-        setTimeout(typeChar, 30 + Math.random() * 50);
+        setTimeout(typeChar, 30 + Math.random() * 30);
       } else {
         lineIndex++;
-        setTimeout(typeNextLine, 500);
+        setTimeout(typeNextLine, 300);
       }
     }
     
