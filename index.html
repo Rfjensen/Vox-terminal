@@ -7,37 +7,58 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Sound effects -->
-  <audio id="dropSFX" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_90040b8425.mp3?filename=ui-confirmation-alert-1-130447.mp3" preload="auto"></audio>
-  
   <!-- Animation layers -->
   <div class="background-glow"></div>
   <div class="particle-layer"></div>
   <div class="scanner-line"></div>
 
-  <!-- Main terminal -->
-  <div class="terminal" id="mainTerminal">
-    <div class="terminal-header">> VOX RECRUITMENT TERMINAL</div>
-    <div class="clue-text" id="clue">"Speak the phrase hidden in this domain."</div>
-    <button onclick="startVoiceRecognition()" id="startBtn" class="button-terminal">>> INITIATE VOICE TRACE</button>
-    <div id="voiceFeedback"></div>
-    <div id="mainOutput" class="output-log"></div>
-    <div class="command-list" id="commandList" style="display:none;">
-      <!-- Commands will be populated by JavaScript -->
+  <!-- Main terminal container -->
+  <div class="terminal-container">
+    <!-- Main terminal for output -->
+    <div class="terminal" id="mainTerminal">
+      <div class="terminal-header">> VOX RECRUITMENT TERMINAL</div>
+      <div class="clue-text" id="clue">"Speak the phrase hidden in this domain."</div>
+      <button onclick="startVoiceRecognition()" id="startBtn" class="button-terminal">>> INITIATE VOICE TRACE</button>
+      <div id="voiceFeedback"></div>
+      <div id="mainOutput" class="output-log"></div>
     </div>
-    <div class="input-line">
-      <input type="text" id="commandInput" placeholder="Enter command or answer...">
+
+    <!-- Command input panel - appears after voice unlock -->
+    <div class="command-panel" id="commandPanel" style="display: none;">
+      <div class="command-header">> COMMAND INPUT</div>
+      <div class="command-hints">
+        <div>Available Commands:</div>
+        <small>help - View all commands</small>
+      </div>
+      <div class="input-area">
+        <input type="text" id="commandInput" placeholder="Enter command...">
+        <button onclick="submitCommand()" class="button-terminal">SEND</button>
+      </div>
     </div>
-    <div id="unlockMessage"></div>
   </div>
 
-  <!-- Puzzle overlay -->
-  <div class="terminal-overlay" id="puzzleOverlay">
-    <div class="terminal-header">> PUZZLE TERMINAL</div>
-    <div id="puzzleOutput">Decrypt this: R1 E2 D3 A4 C5 T6<br>Rearrange to unlock.</div>
-    <input type="text" id="puzzleInput" placeholder="Enter solution...">
-    <button onclick="checkPuzzleSolution()">Submit</button>
-    <button onclick="closePuzzle()">Close</button>
+  <!-- Popup overlay for messages -->
+  <div class="popup-overlay" id="popupOverlay" style="display: none;">
+    <div class="popup-content">
+      <div class="popup-header" id="popupHeader"></div>
+      <div class="popup-body" id="popupBody"></div>
+      <button onclick="closePopup()" class="button-terminal">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Node map overlay -->
+  <div class="node-map-overlay" id="nodeMapOverlay" style="display: none;">
+    <div class="map-container">
+      <div class="map-header">
+        <span>> VOX NETWORK NODE MAP</span>
+        <button class="close-map" onclick="closeNodeMap()">×</button>
+      </div>
+      <canvas id="nodeMapCanvas" width="600" height="400"></canvas>
+      <div class="map-status">Status: <span class="status-text">Scanning...</span></div>
+      <div class="map-instructions" id="mapInstructions" style="display: none;">
+        Click on dormant nodes to establish connection
+      </div>
+    </div>
   </div>
 
   <!-- Hacker noise display -->
