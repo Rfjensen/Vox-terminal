@@ -1239,4 +1239,200 @@ body {
     width: 90%;
     max-width: 350px;
   }
+  
+/* Main container layout */
+.terminal-container {
+  display: flex;
+  gap: 20px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 80vh;
+  position: relative;
+}
+
+/* Terminal and command panel side by side */
+.terminal {
+  flex: 2;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 20px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.command-panel {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 20px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Output area that fills available space */
+.output-log {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-right: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
+}
+
+/* Command input area */
+.input-area {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #0f0;
+  color: #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 8px;
+  outline: none;
+}
+
+.input-area button {
+  background: transparent;
+  border: 2px solid #0f0;
+  color: #0f0;
+  padding: 8px 15px;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.input-area button:hover {
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 10px #0f0;
+}
+
+/* Command header styling */
+.command-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #0f0;
+}
+
+/* Command hints styling */
+.command-hints {
+  color: #0a0;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+/* Popup overlay styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: rgba(0, 20, 0, 0.9);
+  padding: 30px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  min-width: 300px;
+  max-width: 500px;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.popup-header {
+  color: #0f0;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #0f0;
+}
+
+.popup-body {
+  color: #ddd;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* Enhanced node map styles */
+.node-map-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.map-container {
+  background: rgba(0, 10, 0, 0.95);
+  padding: 20px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  border-radius: 5px;
+}
+
+.map-instructions {
+  text-align: center;
+  color: #0f0;
+  margin-top: 10px;
+  animation: blink 1s infinite;
+}
+
+/* Node status styling */
+.node {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.node.dormant:hover {
+  stroke: #f00;
+  stroke-width: 2;
+}
+
+/* Hide command panel initially */
+.command-panel {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .terminal-container {
+    flex-direction: column;
+    height: auto;
+    gap: 15px;
+  }
+  
+  .terminal {
+    height: 50vh;
+  }
 }
