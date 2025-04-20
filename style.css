@@ -1432,7 +1432,134 @@ body {
     gap: 15px;
   }
   
-  .terminal {
-    height: 50vh;
+  /* Add these styles to your existing CSS */
+
+/* Main container layout */
+.main-container {
+  display: flex;
+  gap: 20px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 80vh;
+  position: relative;
+}
+
+/* Help panel styles */
+.help-panel {
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 20px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  width: 300px;
+  height: fit-content;
+  position: relative;
+  margin-top: 60px; /* Aligns with terminal content */
+}
+
+.help-header {
+  color: #0f0;
+  font-weight: bold;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #0f0;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.command-list-static {
+  font-family: 'Share Tech Mono', monospace;
+  color: #0f0;
+  line-height: 1.6;
+  font-size: 0.9em;
+}
+
+.command-list-static div {
+  margin-bottom: 5px;
+}
+
+.help-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #0f0;
+  font-size: 0.8em;
+  color: #0a0;
+  opacity: 0.7;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Ensure terminal keeps its flex-grow property */
+.terminal {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 40px;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 30px #0f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Make sure the output-log stays at bottom of view */
+.output-log {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
+  scroll-behavior: smooth;
+}
+
+/* Type button styling */
+#typeBtn {
+  opacity: 1;
+  background: none;
+  border: 2px solid #0f0;
+  padding: 10px 20px;
+  color: #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#typeBtn:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 10px #0f0;
+}
+
+/* Input line at the bottom of terminal */
+.input-line {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.input-line input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #0f0;
+  color: #0f0;
+  font-size: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  outline: none;
+  padding: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    height: auto;
   }
+  
+  .help-panel {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .terminal {
+    height: 60vh;
+  }
+}
 }
